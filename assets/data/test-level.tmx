@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="32" tileheight="32" infinite="0" nextobjectid="7">
  <tileset firstgid="1" source="proto-tiles.tsx"/>
- <layer name="Background" width="20" height="15">
+ <layer name="background" width="20" height="15">
   <properties>
    <property name="tileset" value="proto-tiles"/>
   </properties>
@@ -23,7 +23,7 @@
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 </data>
  </layer>
- <objectgroup name="Markers">
+ <objectgroup name="markers">
   <object id="1" name="mob_waves_0" type="mob_spawn" x="14" y="269">
    <point/>
   </object>

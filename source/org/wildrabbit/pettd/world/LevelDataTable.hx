@@ -3,6 +3,12 @@ package org.wildrabbit.pettd.world;
 import openfl.Assets;
 import haxe.Json;
 
+typedef FloatVec2 =
+{
+	var x:Float;
+	var y:Float;
+}
+
 typedef IntVec2 =
 {
 	var x:Int;

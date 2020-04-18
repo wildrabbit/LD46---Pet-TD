@@ -17,7 +17,7 @@ class PlayState extends FlxState
 	
 	var gameGroup:FlxGroup;
 	
-	var pet:FlxSprite; // Pet.
+	var pet:Pet; // Pet.
 	var turrets:Array <FlxSprite>;
 	
 	var entities:FlxGroup;
@@ -41,6 +41,7 @@ class PlayState extends FlxState
 		gameGroup = new FlxGroup();
 		add(gameGroup);
 		
+		entities = new FlxGroup();
 		
 		loadLevelByIdx(currentLevelIdx);		
 	}
@@ -64,18 +65,25 @@ class PlayState extends FlxState
 				level = null;
 			}
 			
-			for (obj in gameGroup)
+			if (entities != null)
 			{
-				obj.destroy();
+				gameGroup.remove(entities);
+				for (obj in entities)
+				{
+					obj.destroy();
+				}
+				entities.clear();
 			}
-			gameGroup.clear();
 		}		
 		
 		level = new Level(levelJson.levelTMXPath, this);		
 		gameGroup.add(level.background);
+		gameGroup.add(entities);
 		gameGroup.add(level.foreground);
-		// TODO: Reset Entities
+		var playerPos:FloatVec2 = level.PlayerPos;
 		
+		pet = new Pet(playerPos.x, playerPos.y);
+		entities.add(pet);
 		// TODO: Reset HUD
 		
 	}
