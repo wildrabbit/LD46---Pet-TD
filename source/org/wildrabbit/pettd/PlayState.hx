@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import haxe.macro.Expr.Var;
+import org.wildrabbit.pettd.Mob;
 import org.wildrabbit.pettd.world.Level;
 import org.wildrabbit.pettd.world.LevelDataTable;
 
@@ -84,6 +85,10 @@ class PlayState extends FlxState
 		
 		pet = new Pet(playerPos.x, playerPos.y);
 		entities.add(pet);
+		
+		var mobPos:FloatVec2 = level.PosFromCoords({"x":5, "y":5});
+		var randomMob: Mob = new Mob(mobPos.x, mobPos.y);
+		entities.add(randomMob);
 		// TODO: Reset HUD
 		
 	}
