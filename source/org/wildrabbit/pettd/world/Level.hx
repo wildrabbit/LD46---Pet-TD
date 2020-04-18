@@ -1,4 +1,4 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.world;
 
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -84,6 +84,21 @@ class Level extends TiledMap
 			tilemap.loadMapFromArray(tileLayer.tileArray, width, height, processed, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
 			background.add(tilemap);
 		}
+	}
+	
+	public function destroy():Void
+	{
+		for (bgObject in background)
+		{
+			bgObject.destroy();			
+		}
+		background.clear();
+		
+		for (fgObject in foreground)
+		{
+			fgObject.destroy();
+		}
+		foreground.clear();
 	}
 	
 }

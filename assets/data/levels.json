@@ -1,0 +1,7 @@
+[
+	{
+		"id":0,
+		"name": "Le test level",
+		"levelTMXPath": "assets/data/test-level.tmx"
+	}
+]
