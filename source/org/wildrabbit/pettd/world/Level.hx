@@ -9,10 +9,13 @@ import flixel.addons.editors.tiled.TiledLayer.TiledLayerType;
 import flixel.addons.editors.tiled.TiledMap;
 import flixel.addons.editors.tiled.TiledObject;
 import flixel.addons.editors.tiled.TiledObjectLayer;
+import flixel.addons.editors.tiled.TiledPropertySet;
+import flixel.addons.editors.tiled.TiledTile;
 import flixel.addons.editors.tiled.TiledTileLayer;
 import flixel.addons.editors.tiled.TiledTileSet;
 import flixel.addons.editors.tiled.TiledTilePropertySet;
 import flixel.group.FlxGroup;
+import flixel.math.FlxRandom;
 import flixel.tile.FlxTilemap;
 import flixel.addons.tile.FlxTilemapExt;
 import flixel.addons.tile.FlxTileSpecial;
@@ -40,22 +43,44 @@ class Level extends TiledMap
 	
 	var parentState:PlayState;
 	
-	public var PlayerPos(get, null):FloatVec2;
+	public var playerPos(get, null):FloatVec2;
 	
-	function get_PlayerPos() return PosFromCoords(playerCoords);
+	public var navigationMap:FlxTilemap;
 	
-	public function CoordsFromPos(pos:FloatVec2):IntVec2
+	function get_playerPos() return posFromCoords(playerCoords);
+	
+	public function getSpawnPos(id:String):FloatVec2
+	{
+		return posFromCoords(waveSpawns[id]);
+	}
+	
+	public function getRandomSpawnPos():FloatVec2
+	{
+		var keyList:Array<String> = new Array<String>();
+		var keyIter:Iterator<String> = waveSpawns.keys();
+		while (keyIter.hasNext())
+		{
+			keyList.push(keyIter.next());
+		}
+		
+		var flxRandom:FlxRandom = new FlxRandom();
+		var key:String = flxRandom.getObject(keyList);
+		
+		return posFromCoords(waveSpawns[key]);
+	}
+	
+	public function coordsFromPos(pos:FloatVec2):IntVec2
 	{
 		var coords:IntVec2 = {
 			x:0,
 			y:0
 		};
-		coords.x = Math.round(pos.x / tileWidth);
-		coords.y = Math.round(pos.y / tileHeight);
+		coords.x = Math.floor(pos.x / tileWidth);
+		coords.y = Math.floor(pos.y / tileHeight);
 		return coords;
 	}
 	
-	public function PosFromCoords(coords:IntVec2):FloatVec2
+	public function posFromCoords(coords:IntVec2):FloatVec2
 	{
 		var pos:FloatVec2 = { x:0, y:0};
 		pos.x = coords.x * tileWidth;
@@ -101,11 +126,11 @@ class Level extends TiledMap
 		{
 			if (obj.type == "pet_position")
 			{
-				playerCoords = CoordsFromPos({"x": obj.x, "y": obj.y});
+				playerCoords = coordsFromPos({"x": obj.x, "y": obj.y});
 			}
 			else if (obj.type == "mob_spawn")
 			{
-				var spawnPos:IntVec2 = {"x": obj.x, "y": obj.y};
+				var spawnPos:IntVec2 = coordsFromPos({"x": obj.x, "y": obj.y});
 				waveSpawns[obj.name] = spawnPos;
 			}
 		}
@@ -133,11 +158,35 @@ class Level extends TiledMap
 		{
 			throw 'tileset ${tilesheetName} not found.';
 		}
-
+		
+		var tileArray:Array<Int> = tileLayer.tileArray;
+		
 		var imgPath = new Path(tileset.imageSource);
 		var processed = '${PATH_TILESET}${imgPath.file}.${imgPath.ext}';
 		var tilemap = new FlxTilemap();
-		tilemap.loadMapFromArray(tileLayer.tileArray, width, height, processed, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
+		tilemap.loadMapFromArray(tileArray, width, height, processed, tileset.tileWidth, tileset.tileHeight, OFF, tileset.firstGID, 1, 1);
+		
+		var hasNavigationInfo:Bool = tileLayer.properties.get("path-info") == "true";
+		if (hasNavigationInfo)
+		{
+			navigationMap = tilemap;
+			var idx:Int = 0;
+			while(idx < tileset.tileTypes.length)
+			{
+				var tileGid:Int = tileset.toGid(idx);
+					
+				if (tileset.tileTypes[idx] == "road")
+				{
+					navigationMap.setTileProperties(tileGid, FlxObject.NONE);
+				}
+				else
+				{
+					navigationMap.setTileProperties(tileGid, FlxObject.ANY);
+				}
+				idx++;
+			}
+		}
+
 		
 		if (groupMap.exists(tileLayer.name))
 		{

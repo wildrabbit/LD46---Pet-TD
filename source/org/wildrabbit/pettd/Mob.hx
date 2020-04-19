@@ -1,7 +1,20 @@
 package org.wildrabbit.pettd;
 
+import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
+import flixel.util.FlxPath;
+import flixel.util.FlxSignal;
 import org.wildrabbit.pettd.AssetPaths;
 import org.wildrabbit.pettd.Character;
+import org.wildrabbit.pettd.world.Level;
+
+typedef MobData =
+{
+	var characterData:CharacterData;
+	var damage:Int;
+	var speed:Int;
+}
 
 /**
  * ...
@@ -9,18 +22,57 @@ import org.wildrabbit.pettd.Character;
  */
 class Mob extends Character 
 {
-
-	public function new(?X:Float=0, ?Y:Float=0) 
+	var moving:Bool = false;
+	public var damage:Int;
+	public var speed:Int;
+	
+	public function new(?X:Float=0, ?Y:Float=0, mobData:MobData) 
 	{
-		var mobData = {
-			"sheetFile":AssetPaths.proto_mob__png,
-			"atlasFile":AssetPaths.proto_mob__json,
-			"prefix":"proto-mob",
-			"postfix":".aseprite",
-			"anims":[{"name":"idle", "frames":[0,1], "fps":3}],
-			"defaultAnim":"idle"
-		};
-		super(X, Y, mobData);
+		super(X, Y, mobData.characterData);
+		
+		damage = mobData.damage;
+		speed = mobData.speed;
+		
+		path = new FlxPath();
+		moving = false;
+		path.cancel();
+		velocity.x = velocity.y = 0;
 	}
 	
+	public function goTo(target:FlxSprite, level:Level):Void
+	{
+		var start:FlxPoint = getMidpoint();
+		var end:FlxPoint = target.getMidpoint();
+		var pathPoints:Array<FlxPoint> = level.navigationMap.findPath(start, end, true, false, FlxTilemapDiagonalPolicy.NONE);
+		path.start(pathPoints,speed, FlxPath.FORWARD);
+		
+		moving = true;
+	}
+	
+	override public function update(elapsed:Float):Void 
+	{
+		super.update(elapsed);
+		
+		if (moving && path.finished)
+		{
+			path.cancel();
+			velocity.x = velocity.y = 0;
+			moving = false;
+		}
+	}
+	
+	public function petHit():Void
+	{
+		takeDamage(hp);
+	}
+	
+	public function stop():Void
+	{
+		if (moving)
+		{
+			path.cancel();
+			velocity.x = velocity.y = 0;
+			moving = false;
+		}
+	}
 }

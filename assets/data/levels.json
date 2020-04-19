@@ -2,6 +2,27 @@
 	{
 		"id":0,
 		"name": "Le test level",
-		"levelTMXPath": "assets/data/test-level.tmx"
+		"levelTMXPath": "assets/data/test-level.tmx",
+		"waves":[
+			{
+				"spawnDelay":0.2,
+				"timeMarker":2,
+				"mobs":[0,0,0,0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":8,
+				"mobs":[0,0,0],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":8,
+				"mobs":[0,0,0],
+				"mobSpawn":"mob_waves_0"
+			}
+		]
 	}
 ]

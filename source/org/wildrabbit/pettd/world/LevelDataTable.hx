@@ -23,14 +23,22 @@ typedef IntRect =
 	var h:Int;
 }
 
+typedef WaveData =
+{
+	var spawnDelay:Float;
+	var timeMarker:Float;
+	var mobs:Array<Int>;
+	var mobSpawn:String;
+}
+
 typedef LevelJson = 
  {
 	var id:Int;
 	var name:String;
 	
 	var levelTMXPath:String;
-	
-	// TODO: Setup waves, rules, etc
+
+	var waves: Array<WaveData>;
  }
 
 /**
