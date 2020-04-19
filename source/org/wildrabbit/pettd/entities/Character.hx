@@ -39,6 +39,7 @@ class Character extends FlxSprite
 	
 		
 	public var damaged:FlxTypedSignal<Character-> Int-> Void>;
+	public var healed:FlxTypedSignal<Character-> Int-> Void>;
 	public var died:FlxTypedSignal<Character-> Void>;
 	
 	var root:PlayState;
@@ -60,6 +61,7 @@ class Character extends FlxSprite
 		animation.play(data.defaultAnim);
 		
 		damaged = new FlxTypedSignal<Character->Int->Void>();
+		healed = new FlxTypedSignal<Character->Int->Void>();
 		died= new FlxTypedSignal<Character->Void>();
 	}
 	
@@ -74,6 +76,16 @@ class Character extends FlxSprite
 			kill();
 			died.dispatch(this);
 		}
-	}
+	}	
 	
+	public function recoverHealth(delta:Int, ?overflow:Bool = false):Void
+	{
+		hp += delta;
+		if (hp > maxHP && !overflow)
+		{
+			hp = maxHP;
+		}
+
+		healed.dispatch(this, delta);
+	}
 }

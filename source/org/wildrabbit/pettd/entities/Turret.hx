@@ -38,6 +38,8 @@ typedef TurretData = {
 	var height:Int;
 	
 	var ?bulletData:ProjectileData;	
+	
+	var foodCost:Int;
 }
 
 /**
@@ -62,10 +64,14 @@ class Turret extends FlxNestedSprite
 	var fireReady:Bool;
 	var detection:FlxSprite;
 	
+	var turretActive:Bool;
+	
 	public function new(X:Float=0, Y:Float=0, turretData:TurretData, state:PlayState) 
 	{
 		super(X, Y);
 		loadGraphic(turretData.baseGraphic);
+		
+		state.levelOverSignal.add(onLevelOver);
 		
 		
 		root = state;
@@ -90,7 +96,7 @@ class Turret extends FlxNestedSprite
 		
 		var lineStyle:LineStyle = {
 			thickness:1,
-			color:FlxColor.WHITE
+			color:FlxColor.fromRGB(255, 255, 255, 128)
 		};
 		
 		FlxSpriteUtil.drawCircle(detection, detectionRadius, detectionRadius, detectionRadius, FlxColor.TRANSPARENT, lineStyle);
@@ -103,10 +109,18 @@ class Turret extends FlxNestedSprite
 		
 		fireTimer = new FlxTimer();
 		fireReady = true;
+		turretActive = true;
+	}
+	
+	function onLevelOver(result:Result):Void
+	{
+		turretActive = false;
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
+		if (!turretActive) return;
+		
 		var lastAngle:Float = cannonSprite.relativeAngle;
 		super.update(elapsed);
 		

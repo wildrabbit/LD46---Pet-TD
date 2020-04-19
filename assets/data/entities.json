@@ -35,13 +35,13 @@
 			"maxHP":100
 		},
 		"foodWarningThreshold":0.15,
-		"foodHappyThreshold":0.85,
-		"foodHPDepletionRate":2,
+		"foodHappyThreshold":0.75,
+		"foodHPDepletionRate":8,
 		"foodHPDepletionSecs":3,
 		"foodHPRegenRate":8,
 		"foodHPRegenSecs":2,
-		"foodConsumptionRate":15,
-		"foodConsumptionSecs":3,
+		"foodConsumptionRate":8,
+		"foodConsumptionSecs":2,
 		"foodMaxCapacity":100,
 		"foodStartCapacity":65
 	}
@@ -66,11 +66,11 @@
 				"defaultAnim":"idle",
 				"maxHP":20
 			},
-			"damage":5,
+			"damage":8,
 			"speed":80,
 			"nutrientSpawnChance":70,
-			"nutrientSpawnMin":10,
-			"nutrientSpawnMax":30,
+			"nutrientSpawnMin":8,
+			"nutrientSpawnMax":12,
 			"nutrientType":"food"
 		}
 	],
@@ -84,6 +84,7 @@
 			"detectionRadius":128,
 			"width":2,
 			"height":2,
+			"foodCost":15,
 			"bulletData": 
 				{
 					"graphic":"assets/images/bullet.png",

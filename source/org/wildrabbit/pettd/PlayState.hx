@@ -77,7 +77,7 @@ class PlayState extends FlxState
 	
 	public var nutrientAmount:Int;
 	
-	public var nutrientGivenPerClick:Int = 5;
+	public var nutrientGivenPerClick:Int = 10;
 
 	
 	// var projectiles:flxgroup, etc
@@ -254,6 +254,7 @@ class PlayState extends FlxState
 		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, entityLibrary.getMobById(mobId), this);
 		mobs.add(randomMob);
 		randomMob.goTo(pet, level);
+		randomMob.destroyedByBullet.add(onMobGotKilled);
 		randomMob.died.add(onMobDied);
 	}
 	
@@ -297,10 +298,20 @@ class PlayState extends FlxState
 			
 			if (level.isValidTurretRect(coords, turretData.width, turretData.height, turrets))
 			{
-				var posBis:FloatVec2 = level.posFromCoords(coords);
-				var turret:Turret = new Turret(posBis.x, posBis.y, turretData, this);
-				turrets.add(turret);
+				if (nutrientAmount >= turretData.foodCost)
+				{
+					var posBis:FloatVec2 = level.posFromCoords(coords);
+					var turret:Turret = new Turret(posBis.x, posBis.y, turretData, this);
+					turrets.add(turret);
+					nutrientAmount -= turretData.foodCost;
+					usedFood.dispatch(turretData.foodCost);
+				}
+				else
+				{
+					FlxG.log.add("Not enough food!");
+				}
 			}
+
 		}
 		
 		
@@ -324,7 +335,7 @@ class PlayState extends FlxState
 	function setResult(levelResult:Result):Void
 	{
 		result = levelResult;
-		var resultStyle:LogStyle = new LogStyle("[RESULT]",FlxColor.fromRGB(200,128,255,255));
+		var resultStyle:LogStyle = new LogStyle("[RESULT]","eebbff",12);
 		if (levelResult == Result.Lost)
 		{
 			FlxG.log.advanced("Game lost!", resultStyle);
@@ -370,16 +381,11 @@ class PlayState extends FlxState
 		var bullet:Bullet = cast obj1;
 		var mob:Mob = cast obj2;
 		bullet.onHit();
-		mob.takeDamage(bullet.dmg);
+		mob.hitByBullet(bullet);
 	}
 	
-	function onMobDied(mobChar:Character):Void
-	{
-		var mob:Mob = cast mobChar;
-		entities.remove(mob, true);
-		mobs.remove(mob, true);
-		FlxG.log.add('Some mob died');
-		
+	function onMobGotKilled(mob:Mob):Void
+	{			
 		var rnd:FlxRandom = new FlxRandom();
 		if (rnd.bool(mob.spawnChance))
 		{
@@ -388,6 +394,15 @@ class PlayState extends FlxState
 			var pickable:Pickable = new Pickable(pos.x, pos.y, mob.spawnType, amount, this);
 			pickables.add(pickable);
 		}
+	}
+	
+	function onMobDied(mobChar:Character):Void
+	{
+		var mob:Mob = cast mobChar;
+		entities.remove(mob, true);
+		mobs.remove(mob, true);
+		FlxG.log.add('Some mob died');
+
 	}
 	
 	public function shootBullet(pos:FlxPoint, target:Mob, bulletData:ProjectileData):Void

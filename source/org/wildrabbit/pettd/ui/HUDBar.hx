@@ -10,6 +10,7 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import org.wildrabbit.pettd.PlayState;
 import org.wildrabbit.pettd.entities.Character;
+import org.wildrabbit.pettd.entities.Pet.NeedState;
 
 /**
  * ...
@@ -21,6 +22,7 @@ class HUDBar extends FlxGroup
 	var waveCounter:FlxText;
 	var timer:FlxText;
 	var food:FlxText;
+	var hunger:FlxText;
 	
 	public var foodTarget:FlxPoint;
 	
@@ -51,7 +53,13 @@ class HUDBar extends FlxGroup
 		food = new FlxText(FlxG.width - 120, 16, 120, 'Food: ${parent.nutrientAmount}', 12);
 		add(food);
 		
+		hunger = new FlxText(FlxG.width - 120, 30, 120, hungerText(), 12);
+		hunger.color = parent.pet.getHungerStatusColour();
+		add(hunger);
+		
+		parent.pet.stateChanged.add(updateHunger);
 		parent.pet.damaged.add(updateHP);
+		parent.pet.healed.add(updateHP);
 		parent.addedFood.add(updateFood);
 		parent.usedFood.add(updateFood);
 		
@@ -61,6 +69,11 @@ class HUDBar extends FlxGroup
 		foodTarget = food.getMidpoint();
 		
 		parent.levelOverSignal.add(onLevelOver);
+	}
+	
+	function hungerText():String
+	{
+		return 'Hunger: ${parent.pet.foodCount}/${parent.pet.foodMax}';
 	}
 	
 	function updateHP(pet:Character, delta:Int):Void
@@ -81,6 +94,7 @@ class HUDBar extends FlxGroup
 	function timerTicked(leTimer:FlxTimer):Void 
 	{
 		timer.text = timerText(parent.totalElapsed);	
+		updateHunger(parent.pet.foodState);
 		if (!updateWaves)
 		{
 			return;
@@ -104,6 +118,12 @@ class HUDBar extends FlxGroup
 	function updateFood(delta:Int):Void
 	{
 		food.text = 'Food: ${parent.nutrientAmount}';
+	}
+	
+	function updateHunger(need:NeedState):Void
+	{
+		hunger.text = hungerText();
+		hunger.color = parent.pet.getHungerStatusColour();
 	}
 	
 }

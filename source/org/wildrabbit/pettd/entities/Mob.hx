@@ -8,6 +8,7 @@ import flixel.util.FlxPath;
 import flixel.util.FlxSignal;
 import org.wildrabbit.pettd.AssetPaths;
 import org.wildrabbit.pettd.PlayState;
+import org.wildrabbit.pettd.entities.Bullet;
 import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.world.Level;
 
@@ -41,6 +42,8 @@ class Mob extends Character
 	
 	public var mobUID:Int;
 	
+	public var destroyedByBullet:FlxTypedSignal<Mob->Void>;
+	
 	public function new(?X:Float=0, ?Y:Float=0, mobData:MobData, root:PlayState) 
 	{
 		super(X, Y, mobData.characterData, root);
@@ -59,6 +62,8 @@ class Mob extends Character
 		spawnType = mobData.nutrientType;
 		
 		mobUID = Mob.maxID++;
+		
+		destroyedByBullet = new FlxTypedSignal();
 	}
 	
 	public function goTo(target:FlxSprite, level:Level):Void
@@ -80,6 +85,15 @@ class Mob extends Character
 			path.cancel();
 			velocity.x = velocity.y = 0;
 			moving = false;
+		}
+	}
+	
+	public function hitByBullet(bullet:Bullet):Void
+	{
+		takeDamage(bullet.dmg);
+		if (hp == 0)
+		{
+			destroyedByBullet.dispatch(this);
 		}
 	}
 	

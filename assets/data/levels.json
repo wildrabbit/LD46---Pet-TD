@@ -22,6 +22,39 @@
 				"timeMarker":12,
 				"mobs":[0,0,0],
 				"mobSpawn":"mob_waves_0"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":18,
+				"mobs":[0,0,0, 0, 0, 0],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":18.2,
+				"mobs":[0,0,0, 0, 0, 0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":21,
+				"mobs":[0,0,0, 0, 0, 0, 0, 0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":25,
+				"mobs":[0,0,0, 0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":28,
+				"mobs":[0,0,0, 0, 0, 0, 0, 0, 0],
+				"mobSpawn":"mob_waves_1"
 			}
 		],
 		"startFood":30
