@@ -5,6 +5,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRandom;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import haxe.macro.Expr.Var;
@@ -13,6 +16,7 @@ import org.wildrabbit.pettd.entities.EntityLibrary;
 import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.entities.Mob;
 import org.wildrabbit.pettd.entities.Pet;
+import org.wildrabbit.pettd.entities.Pickable;
 import org.wildrabbit.pettd.entities.Turret;
 import org.wildrabbit.pettd.ui.HUDBar;
 import org.wildrabbit.pettd.world.Level;
@@ -37,6 +41,8 @@ class PlayState extends FlxState
 	public var turrets:FlxTypedGroup<Turret>;
 	public var mobs:FlxTypedGroup<Mob>;
 	public var bullets:FlxTypedGroup<Bullet>;
+	public var pickables:FlxTypedGroup<Pickable>;
+	public var pickablesHUD:FlxTypedGroup<Pickable>;
 	
 	var hud:HUDBar;
 	
@@ -49,6 +55,9 @@ class PlayState extends FlxState
 	
 	var result:Result;
 	public var levelOverSignal:FlxTypedSignal<Result -> Void>;
+	
+	public var addedFood:FlxTypedSignal<Int -> Void>;
+	public var usedFood:FlxTypedSignal<Int -> Void>;
 	
 	var waveTimer:FlxTimer;
 	var spawnTimer:FlxTimer;
@@ -63,14 +72,15 @@ class PlayState extends FlxState
 	
 	public var totalElapsed:Float;
 	
+	public var nutrientAmount:Int;
+
+	
 	// var projectiles:flxgroup, etc
 	
 	override public function create():Void
 	{
 		super.create();
 
-		
-		
 		FlxG.mouse.visible = true;
 		
 		bgColor = 0xff330033; // ARGB?
@@ -86,20 +96,28 @@ class PlayState extends FlxState
 		hud = new HUDBar(this);
 		add(hud);
 		
+		addedFood = new FlxTypedSignal<Int->Void>();
+		usedFood = new FlxTypedSignal<Int->Void>();
+		levelOverSignal = new FlxTypedSignal<Result->Void>();
+		
 		entities = new FlxGroup();
 		mobs = new FlxTypedGroup<Mob>();
 		turrets = new FlxTypedGroup<Turret>();
 		bullets = new FlxTypedGroup<Bullet>();
 		turretVFX = new FlxGroup();
+		pickables = new FlxTypedGroup<Pickable>();
+		pickablesHUD = new FlxTypedGroup<Pickable>();
+		
 		loadLevelByIdx(currentLevelIdx);		
 
 		
 		result = Result.Running;
-		
-		levelOverSignal = new FlxTypedSignal<Result->Void>();
+
+
 		
 		turretData = entityLibrary.getTurretById(0);
 		totalElapsed = 0;
+		nutrientAmount = 0;
 	}
 	
 	public function loadLevelByIdx(idx:Int):Void
@@ -157,7 +175,10 @@ class PlayState extends FlxState
 		//gameGroup.add(level.foreground);
 		gameGroup.add(bullets);
 		var playerPos:FloatVec2 = level.playerPos;
+		
 		gameGroup.add(turretVFX);
+		gameGroup.add(pickablesHUD);
+
 		
 		pet = new Pet(playerPos.x, playerPos.y, entityLibrary.defaultPet);
 		pet.died.add(onPetDied);
@@ -166,9 +187,11 @@ class PlayState extends FlxState
 		mobs.clear();
 		turrets.clear();
 
+		entities.add(pickables);
 		entities.add(pet);
 		entities.add(turrets);
 		entities.add(mobs);
+		
 	
 		waveTimer = new FlxTimer();
 		spawnTimer = new FlxTimer();
@@ -333,6 +356,15 @@ class PlayState extends FlxState
 		entities.remove(mob, true);
 		mobs.remove(mob, true);
 		trace('Some mob died');
+		
+		var rnd:FlxRandom = new FlxRandom();
+		if (rnd.bool(mob.spawnChance))
+		{
+			var amount:Int = rnd.int(mob.spawnMin, mob.spawnMax);
+			var pos:FlxPoint = mob.getMidpoint();
+			var pickable:Pickable = new Pickable(pos.x, pos.y, mob.spawnType, amount, this);
+			pickables.add(pickable);
+		}
 	}
 	
 	public function shootBullet(pos:FlxPoint, target:Mob, bulletData:ProjectileData):Void
@@ -346,4 +378,24 @@ class PlayState extends FlxState
 	{
 		bullets.remove(bullet);
 	}
+	
+	public function autoPick(pickable:Pickable):Void
+	{
+		if (pickable.type == "food")
+		{
+			var grabbedFood:FlxTween-> Void = function(parameter0:FlxTween):Void {
+				nutrientAmount += pickable.amount;
+				addedFood.dispatch(pickable.amount);
+				pickablesHUD.remove(pickable, true);
+				pickable.kill();
+			}
+			
+			pickables.remove(pickable, true);
+			pickablesHUD.add(pickable);
+			FlxTween.tween(pickable, {x:hud.foodTarget.x, y:hud.foodTarget.y}, 0.6, { ease:FlxEase.cubeOut , onComplete: grabbedFood});			
+		}
+
+	}
+	
+	
 }

@@ -39,7 +39,11 @@
 				"maxHP":20
 			},
 			"damage":5,
-			"speed":80
+			"speed":80,
+			"nutrientSpawnChance":70,
+			"nutrientSpawnMin":5,
+			"nutrientSpawnMax":10,
+			"nutrientType":"food"
 		}
 	],
 	"turrets": [

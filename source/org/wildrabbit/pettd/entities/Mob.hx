@@ -14,6 +14,11 @@ typedef MobData =
 	var characterData:CharacterData;
 	var damage:Int;
 	var speed:Int;
+	// TODO: Change to weighted list + types
+	var nutrientSpawnChance:Float;
+	var nutrientSpawnMin:Int;
+	var nutrientSpawnMax:Int;
+	var nutrientType:String;
 }
 
 /**
@@ -26,6 +31,11 @@ class Mob extends Character
 	var moving:Bool = false;
 	public var damage:Int;
 	public var speed:Int;
+	
+	public var spawnChance:Float;
+	public var spawnMin:Int;
+	public var spawnMax:Int;
+	public var spawnType:String;
 	
 	public var mobUID:Int;
 	
@@ -40,6 +50,11 @@ class Mob extends Character
 		moving = false;
 		path.cancel();
 		velocity.x = velocity.y = 0;
+		
+		spawnChance = mobData.nutrientSpawnChance;
+		spawnMin = mobData.nutrientSpawnMin;
+		spawnMax = mobData.nutrientSpawnMax;
+		spawnType = mobData.nutrientType;
 		
 		mobUID = Mob.maxID++;
 	}
