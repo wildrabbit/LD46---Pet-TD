@@ -1,4 +1,4 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.entities;
 
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
@@ -6,7 +6,7 @@ import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
 import flixel.util.FlxPath;
 import flixel.util.FlxSignal;
 import org.wildrabbit.pettd.AssetPaths;
-import org.wildrabbit.pettd.Character;
+import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.world.Level;
 
 typedef MobData =

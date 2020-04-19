@@ -41,5 +41,25 @@
 			"damage":5,
 			"speed":80
 		}
-	]	
+	],
+	"turrets": [
+		{
+			"id":0,
+			"baseGraphic":"assets/images/proto-turret-base.png",
+			"cannonGraphic":"assets/images/proto-turret-cannon.png",
+			"uiGraphic":"assets/images/proto-turret-base.png",
+			"fireRate":0.5,
+			"detectionRadius":128,
+			"width":2,
+			"height":2,
+			"bulletData": 
+				{
+					"graphic":"assets/images/bullet.png",
+					"speed":120,
+					"dmg":5,
+					"ttl":1,
+					"homing":false
+				}
+		}
+	]
 }

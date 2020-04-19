@@ -22,17 +22,15 @@
     <class path="D:\development\HaxeToolkit\haxe\lib\flixel-addons\2,8,0" />
     <class path="source" />
     <class path="D:\development\HaxeToolkit\haxe\lib\openfl\8,9,6\externs\flash" />
-    <class path="export\flash" />
-    <class path="export\flash\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="flixel=4.7.0&#xA;openfl=8.9.6&#xA;lime=7.7.0&#xA;hscript=2.4.0&#xA;flixel-addons=2.8.0&#xA;native-trace&#xA;tools=7.7.0&#xA;ANDROID_SDK=d:\development\android\sdk&#xA;ANDROID_SETUP=true&#xA;flash-use-stage&#xA;ANDROID_NDK_ROOT=d:\development\android\ndk&#xA;no-compilation&#xA;openfl-flash&#xA;JAVA_HOME=d:\development\java\jdk1.8.0_171&#xA;fdb&#xA;openfl-disable-handle-error&#xA;web" />
+    <option directives="flixel=4.7.0&#xA;openfl=8.9.6&#xA;lime=7.7.0&#xA;hscript=2.4.0&#xA;flixel-addons=2.8.0&#xA;tools=7.7.0&#xA;ANDROID_SDK=d:\development\android\sdk&#xA;ANDROID_SETUP=true&#xA;ANDROID_NDK_ROOT=d:\development\android\ndk&#xA;no-compilation&#xA;openfl-flash&#xA;JAVA_HOME=d:\development\java\jdk1.8.0_171&#xA;openfl-disable-handle-error&#xA;web" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="False" />
-    <option additional="--macro openfl._internal.macros.ExtraParams.include()&#xA;--macro lime._internal.macros.DefineMacro.run()&#xA;--macro flixel.system.macros.FlxDefines.run()&#xA;-swf-lib obj/assets.swf&#xA;-swf-version 11.8&#xA;-debug " />
+    <option additional="--macro openfl._internal.macros.ExtraParams.include()&#xA;--macro lime._internal.macros.DefineMacro.run()&#xA;--macro flixel.system.macros.FlxDefines.run()&#xA;-swf-version 11.8&#xA;--no-output " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

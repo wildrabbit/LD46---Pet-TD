@@ -1,14 +1,15 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.entities;
 
 import flash.utils.Timer;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxTimer;
-import org.wildrabbit.pettd.Character;
-import org.wildrabbit.pettd.Turret.ProjectileData;
+import org.wildrabbit.pettd.entities.Character;
+import org.wildrabbit.pettd.entities.Turret.ProjectileData;
 
 /**
  * ...
@@ -42,14 +43,12 @@ class Bullet extends FlxSprite
 	public function SetTarget(tgt:Character):Void
 	{
 		target = tgt;
-		var targetPos:FlxPoint = FlxPoint.get(target.x, target.y);
+		var targetPos:FlxPoint = target.getMidpoint();
 		var pos:FlxPoint = FlxPoint.get(x, y);
 		var vel:FlxVector = FlxVector.get(targetPos.x - pos.x, targetPos.y - pos.y);
 		vel.normalize();
 		vel.scale(speed);
 		velocity.set(vel.x, vel.y);
-		
-		targetPos.put();
 		pos.put();
 	}
 	
@@ -64,12 +63,12 @@ class Bullet extends FlxSprite
 	
 	function targetDied(tgt:Character):Void
 	{
-		killBullet();
+		//killBullet();
 	}
 	
 	function onExpired(timer:FlxTimer):Void
 	{
-		killBullet();
+		onKillExpired(timer);
 	}
 	
 	public function onHit():Void
@@ -81,7 +80,14 @@ class Bullet extends FlxSprite
 	function killBullet():Void
 	{
 		timer.cancel();
+		allowCollisions = FlxObject.NONE;
+		timer.start(0.1, onKillExpired);
+	}
+	
+	function onKillExpired(timer:FlxTimer):Void
+	{
+		timer.cancel();
 		kill();
-		destroyed.dispatch(this);
+		destroyed.dispatch(this);		
 	}
 }

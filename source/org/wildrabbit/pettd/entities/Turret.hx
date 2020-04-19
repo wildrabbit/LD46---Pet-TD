@@ -1,5 +1,6 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.entities;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxNestedSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -13,8 +14,8 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
-import org.wildrabbit.pettd.Character;
-import org.wildrabbit.pettd.Mob;
+import org.wildrabbit.pettd.entities.Character;
+import org.wildrabbit.pettd.entities.Mob;
 import org.wildrabbit.pettd.PlayState;
 
 typedef ProjectileData =
@@ -27,8 +28,10 @@ typedef ProjectileData =
 }
 
 typedef TurretData = {
+	var id:Int;
 	var baseGraphic:FlxGraphicAsset;
 	var cannonGraphic:FlxGraphicAsset;
+	var uiGraphic:FlxGraphicAsset;
 	var fireRate:Float;
 	var detectionRadius:Float;
 	var width:Int;
@@ -57,7 +60,7 @@ class Turret extends FlxNestedSprite
 	
 	var fireTimer:FlxTimer;
 	var fireReady:Bool;
-	var detection:FlxNestedSprite;
+	var detection:FlxSprite;
 	
 	public function new(X:Float=0, Y:Float=0, turretData:TurretData, state:PlayState) 
 	{
@@ -82,9 +85,8 @@ class Turret extends FlxNestedSprite
 		cannonSprite.angle = 0;
 		
 		
-		detection = new FlxNestedSprite();
+		detection = new FlxSprite();
 		detection.makeGraphic(2 * Math.round(detectionRadius), 2 * Math.round(detectionRadius), FlxColor.TRANSPARENT);
-		add(detection);
 		
 		var lineStyle:LineStyle = {
 			thickness:1,
@@ -92,9 +94,10 @@ class Turret extends FlxNestedSprite
 		};
 		
 		FlxSpriteUtil.drawCircle(detection, detectionRadius, detectionRadius, detectionRadius, FlxColor.TRANSPARENT, lineStyle);
-		detection.relativeX = detection.relativeY = -(detectionRadius - width/2);
+		var center:FlxPoint = getMidpoint().subtract(detectionRadius,detectionRadius);
 		
-		
+		detection.setPosition(center.x, center.y);
+		root.turretVFX.add(detection);
 		
 		this.mobs = root.mobs;
 		
@@ -125,7 +128,6 @@ class Turret extends FlxNestedSprite
 		{
 			var targetAngle:Float = center.angleBetween(targetCandidate.getMidpoint());
 			cannonSprite.relativeAngle = targetAngle;
-			trace('target + cannon rot: ${cannonSprite.angle}');
 		}
 		else
 		{
@@ -146,7 +148,6 @@ class Turret extends FlxNestedSprite
 	
 	function fire():Void
 	{
-		trace('Turret at (${x},${y}) goes pew, pew!');
 		var point:FlxPoint = getMidpoint();
 		point.y -= height / 2;
 		point.rotate(getMidpoint(), cannonSprite.relativeAngle);

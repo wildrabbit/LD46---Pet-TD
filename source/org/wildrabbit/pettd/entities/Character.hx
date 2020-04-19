@@ -1,4 +1,4 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.entities;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;

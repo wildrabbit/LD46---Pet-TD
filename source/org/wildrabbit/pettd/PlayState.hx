@@ -8,11 +8,13 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import haxe.macro.Expr.Var;
-import org.wildrabbit.pettd.Bullet;
-import org.wildrabbit.pettd.CharacterLibrary;
-import org.wildrabbit.pettd.Mob;
-import org.wildrabbit.pettd.Pet;
-import org.wildrabbit.pettd.Turret;
+import org.wildrabbit.pettd.entities.Bullet;
+import org.wildrabbit.pettd.entities.EntityLibrary;
+import org.wildrabbit.pettd.entities.Character;
+import org.wildrabbit.pettd.entities.Mob;
+import org.wildrabbit.pettd.entities.Pet;
+import org.wildrabbit.pettd.entities.Turret;
+import org.wildrabbit.pettd.ui.HUDBar;
 import org.wildrabbit.pettd.world.Level;
 import org.wildrabbit.pettd.world.LevelDataTable;
 
@@ -31,35 +33,43 @@ class PlayState extends FlxState
 	
 	var gameGroup:FlxGroup;
 	
-	var pet:Pet; // Pet.
+	public var pet:Pet; // Pet.
 	public var turrets:FlxTypedGroup<Turret>;
 	public var mobs:FlxTypedGroup<Mob>;
 	public var bullets:FlxTypedGroup<Bullet>;
+	
+	var hud:HUDBar;
 	
 	var entities:FlxGroup;
 	var level:Level;
 	
 	var currentLevelIdx: Int;
 	var levelDataTable:LevelDataTable;
-	var characterLibrary:CharacterLibrary;
+	var entityLibrary:EntityLibrary;
 	
 	var result:Result;
 	public var levelOverSignal:FlxTypedSignal<Result -> Void>;
 	
 	var waveTimer:FlxTimer;
 	var spawnTimer:FlxTimer;
-	var currentWaveIdx:Int;
+	public var currentWaveIdx:Int;
 	var currentSpawnIdx:Int;
-	var waves:Array<WaveData>;
+	public var waves:Array<WaveData>;
 	var allWavesSpawned:Bool;
 	
 	var turretData:TurretData;
+	
+	public var turretVFX:FlxGroup;
+	
+	public var totalElapsed:Float;
 	
 	// var projectiles:flxgroup, etc
 	
 	override public function create():Void
 	{
 		super.create();
+
+		
 		
 		FlxG.mouse.visible = true;
 		
@@ -68,43 +78,34 @@ class PlayState extends FlxState
 		
 		loadLevelTable();
 		
-		characterLibrary = new CharacterLibrary("assets/data/characters.json");
+		entityLibrary = new EntityLibrary("assets/data/entities.json");
 		
 		gameGroup = new FlxGroup();
 		add(gameGroup);
+		
+		hud = new HUDBar(this);
+		add(hud);
 		
 		entities = new FlxGroup();
 		mobs = new FlxTypedGroup<Mob>();
 		turrets = new FlxTypedGroup<Turret>();
 		bullets = new FlxTypedGroup<Bullet>();
+		turretVFX = new FlxGroup();
 		loadLevelByIdx(currentLevelIdx);		
+
 		
 		result = Result.Running;
 		
 		levelOverSignal = new FlxTypedSignal<Result->Void>();
 		
-		turretData = {
-			baseGraphic:"assets/images/proto-turret-base.png",
-			cannonGraphic:"assets/images/proto-turret-cannon.png",
-			fireRate:1,
-			detectionRadius:128,
-			width:2,
-			height:2,
-			bulletData:{
-				graphic:"assets/images/bullet.png",
-				speed:180,
-				dmg:5,
-				ttl:1,
-				homing:true
-			}
-		}
+		turretData = entityLibrary.getTurretById(0);
+		totalElapsed = 0;
 	}
 	
 	public function loadLevelByIdx(idx:Int):Void
 	{
 		var level:LevelJson = levelDataTable.getLevelAt(idx);
 		loadLevel(level);
-		// TODO: Set level data.
 	}
 	
 	public function loadLevel(levelJson:LevelJson):Void
@@ -138,25 +139,37 @@ class PlayState extends FlxState
 				}
 				bullets.clear();
 			}
+			
+			if (turretVFX != null)
+			{
+				gameGroup.remove(turretVFX, true);
+				for (tVfx in turretVFX)
+				{
+					tVfx.destroy();
+				}
+				turretVFX.clear();
+			}
 		}		
 		
 		level = new Level(levelJson.levelTMXPath, this);		
 		gameGroup.add(level.background);
 		gameGroup.add(entities);
-		gameGroup.add(level.foreground);
+		//gameGroup.add(level.foreground);
 		gameGroup.add(bullets);
 		var playerPos:FloatVec2 = level.playerPos;
+		gameGroup.add(turretVFX);
 		
-		pet = new Pet(playerPos.x, playerPos.y, characterLibrary.defaultPet);
+		pet = new Pet(playerPos.x, playerPos.y, entityLibrary.defaultPet);
 		pet.died.add(onPetDied);
 		pet.damaged.add(onPetGotDamaged);
 		
 		mobs.clear();
 		turrets.clear();
 
-		entities.add(pet);		
-		
-
+		entities.add(pet);
+		entities.add(turrets);
+		entities.add(mobs);
+	
 		waveTimer = new FlxTimer();
 		spawnTimer = new FlxTimer();
 
@@ -165,7 +178,7 @@ class PlayState extends FlxState
 		allWavesSpawned = false;
 		waveTimer.start(waves[currentWaveIdx].timeMarker, onWaveTick);
 		
-		// TODO: Reset HUD		
+		hud.init();
 	}
 	
 	function onWaveTick(timer:FlxTimer):Void
@@ -195,9 +208,9 @@ class PlayState extends FlxState
 			else
 			{
 				var delta:Float = waves[currentWaveIdx + 1].timeMarker - waves[currentWaveIdx].timeMarker;
-				waveTimer.reset(delta);
-				currentWaveIdx++;
+				waveTimer.reset(delta);				
 			}
+			currentWaveIdx++;
 		}
 		else
 		{
@@ -210,11 +223,10 @@ class PlayState extends FlxState
 	function spawnMob(mobId:Int, mobSpawnPos:String):Void
 	{
 		var mobPos:FloatVec2 = level.getSpawnPos(mobSpawnPos);
-		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, characterLibrary.getMobById(mobId));
+		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, entityLibrary.getMobById(mobId));
 		mobs.add(randomMob);
 		randomMob.goTo(pet, level);
 		randomMob.died.add(onMobDied);
-		entities.add(randomMob);
 	}
 	
 	
@@ -233,6 +245,8 @@ class PlayState extends FlxState
 			return;
 		}
 		
+		totalElapsed += elapsed;
+		
 		if (FlxG.mouse.justReleased)
 		{
 			var pos:FlxPoint = FlxG.mouse.getPosition();
@@ -242,19 +256,14 @@ class PlayState extends FlxState
 			{
 				var posBis:FloatVec2 = level.posFromCoords(coords);
 				var turret:Turret = new Turret(posBis.x, posBis.y, turretData, this);
-				entities.add(turret);
 				turrets.add(turret);
 			}
 		}
 		
 		
-		for (entity in entities)
-		{
-			FlxG.collide(entity, level.navigationMap);
-		}
-		
 		for (mob in mobs)
 		{
+			FlxG.collide(mob, level.navigationMap);
 			FlxG.overlap(mob, pet, mobPetCollision);
 		}
 		

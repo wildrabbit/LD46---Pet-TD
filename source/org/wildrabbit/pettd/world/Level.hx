@@ -24,7 +24,7 @@ import flixel.addons.tile.FlxTileSpecial;
 import haxe.ds.Map;
 import haxe.io.Path;
 import org.wildrabbit.pettd.PlayState;
-import org.wildrabbit.pettd.Turret;
+import org.wildrabbit.pettd.entities.Turret;
 import org.wildrabbit.pettd.world.LevelDataTable.FloatVec2;
 import org.wildrabbit.pettd.world.LevelDataTable.IntVec2;
 

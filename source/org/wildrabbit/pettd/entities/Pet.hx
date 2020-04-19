@@ -1,8 +1,8 @@
-package org.wildrabbit.pettd;
+package org.wildrabbit.pettd.entities;
 
 import flixel.FlxSprite;
 import org.wildrabbit.pettd.AssetPaths;
-import org.wildrabbit.pettd.Character.CharacterData;
+import org.wildrabbit.pettd.entities.Character.CharacterData;
 
 
 /**

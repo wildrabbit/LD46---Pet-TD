@@ -1,6 +1,9 @@
-package org.wildrabbit.pettd;
-import org.wildrabbit.pettd.Character.CharacterData;
-import org.wildrabbit.pettd.Mob.MobData;
+package org.wildrabbit.pettd.entities;
+import org.wildrabbit.pettd.entities.Character;
+import org.wildrabbit.pettd.entities.Mob;
+import org.wildrabbit.pettd.entities.Character.CharacterData;
+import org.wildrabbit.pettd.entities.Mob.MobData;
+import org.wildrabbit.pettd.entities.Turret.TurretData;
 
 import openfl.Assets;
 import haxe.Json;
@@ -10,12 +13,14 @@ import haxe.Json;
  * @author wildrabbit
  */
  
-class CharacterLibrary 
+class EntityLibrary 
 {
 	public var defaultPet:CharacterData;
 	
 	var allPets:Map<Int,CharacterData>;	
 	var allMobs:Map<Int,MobData>;
+	
+	var allTurrets:Map<Int,TurretData>;
 	
 	public function new(jsonPath:String) 
 	{
@@ -41,6 +46,13 @@ class CharacterLibrary
 				defaultPet = entry;
 			}
 		}
+		
+		var turretList:Array<TurretData> = data.turrets;
+		allTurrets = new Map<Int,TurretData>();
+		for (entry in turretList)
+		{
+			allTurrets.set(entry.id, entry);
+		}
 	}
 	
 	public function getMobById(id:Int):MobData
@@ -51,6 +63,16 @@ class CharacterLibrary
 			return null;
 		}
 		return allMobs[id];
+	}
+	
+	public function getTurretById(id:Int):TurretData
+	{
+		if (!allTurrets.exists(id))
+		{
+			trace('Turret ${id} not found!');
+			return null;
+		}
+		return allTurrets[id];
 	}
 	
 }
