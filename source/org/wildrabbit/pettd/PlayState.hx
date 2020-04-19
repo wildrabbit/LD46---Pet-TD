@@ -8,9 +8,11 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import haxe.macro.Expr.Var;
+import org.wildrabbit.pettd.Bullet;
 import org.wildrabbit.pettd.CharacterLibrary;
 import org.wildrabbit.pettd.Mob;
 import org.wildrabbit.pettd.Pet;
+import org.wildrabbit.pettd.Turret;
 import org.wildrabbit.pettd.world.Level;
 import org.wildrabbit.pettd.world.LevelDataTable;
 
@@ -30,8 +32,9 @@ class PlayState extends FlxState
 	var gameGroup:FlxGroup;
 	
 	var pet:Pet; // Pet.
-	var turrets:Array <FlxSprite>;
-	var mobs:FlxTypedGroup<Mob>;
+	public var turrets:FlxTypedGroup<Turret>;
+	public var mobs:FlxTypedGroup<Mob>;
+	public var bullets:FlxTypedGroup<Bullet>;
 	
 	var entities:FlxGroup;
 	var level:Level;
@@ -49,6 +52,8 @@ class PlayState extends FlxState
 	var currentSpawnIdx:Int;
 	var waves:Array<WaveData>;
 	var allWavesSpawned:Bool;
+	
+	var turretData:TurretData;
 	
 	// var projectiles:flxgroup, etc
 	
@@ -70,12 +75,29 @@ class PlayState extends FlxState
 		
 		entities = new FlxGroup();
 		mobs = new FlxTypedGroup<Mob>();
+		turrets = new FlxTypedGroup<Turret>();
+		bullets = new FlxTypedGroup<Bullet>();
 		loadLevelByIdx(currentLevelIdx);		
 		
 		result = Result.Running;
 		
 		levelOverSignal = new FlxTypedSignal<Result->Void>();
-
+		
+		turretData = {
+			baseGraphic:"assets/images/proto-turret-base.png",
+			cannonGraphic:"assets/images/proto-turret-cannon.png",
+			fireRate:1,
+			detectionRadius:128,
+			width:2,
+			height:2,
+			bulletData:{
+				graphic:"assets/images/bullet.png",
+				speed:180,
+				dmg:5,
+				ttl:1,
+				homing:true
+			}
+		}
 	}
 	
 	public function loadLevelByIdx(idx:Int):Void
@@ -106,12 +128,23 @@ class PlayState extends FlxState
 				}
 				entities.clear();
 			}
+			
+			if (bullets != null)
+			{
+				gameGroup.remove(bullets, true);
+				for (obj in bullets)
+				{
+					obj.destroy();
+				}
+				bullets.clear();
+			}
 		}		
 		
 		level = new Level(levelJson.levelTMXPath, this);		
 		gameGroup.add(level.background);
 		gameGroup.add(entities);
 		gameGroup.add(level.foreground);
+		gameGroup.add(bullets);
 		var playerPos:FloatVec2 = level.playerPos;
 		
 		pet = new Pet(playerPos.x, playerPos.y, characterLibrary.defaultPet);
@@ -119,6 +152,7 @@ class PlayState extends FlxState
 		pet.damaged.add(onPetGotDamaged);
 		
 		mobs.clear();
+		turrets.clear();
 
 		entities.add(pet);		
 		
@@ -199,6 +233,21 @@ class PlayState extends FlxState
 			return;
 		}
 		
+		if (FlxG.mouse.justReleased)
+		{
+			var pos:FlxPoint = FlxG.mouse.getPosition();
+			var coords:IntVec2 = level.coordsFromPos({x:pos.x, y:pos.y});
+			
+			if (level.isValidTurretRect(coords, turretData.width, turretData.height, turrets))
+			{
+				var posBis:FloatVec2 = level.posFromCoords(coords);
+				var turret:Turret = new Turret(posBis.x, posBis.y, turretData, this);
+				entities.add(turret);
+				turrets.add(turret);
+			}
+		}
+		
+		
 		for (entity in entities)
 		{
 			FlxG.collide(entity, level.navigationMap);
@@ -208,6 +257,8 @@ class PlayState extends FlxState
 		{
 			FlxG.overlap(mob, pet, mobPetCollision);
 		}
+		
+		FlxG.overlap(bullets, mobs, onBulletHitMob);
 		
 				
 		if (allWavesSpawned && mobs.countLiving() <= 0 && pet.hp > 0)
@@ -259,10 +310,31 @@ class PlayState extends FlxState
 		pet.takeDamage(mob.damage);
 	}
 	
+	function onBulletHitMob(obj1:FlxObject, obj2:FlxObject):Void
+	{
+		var bullet:Bullet = cast obj1;
+		var mob:Mob = cast obj2;
+		bullet.onHit();
+		mob.takeDamage(bullet.dmg);
+	}
+	
 	function onMobDied(mobChar:Character):Void
 	{
 		var mob:Mob = cast mobChar;
 		entities.remove(mob, true);
 		mobs.remove(mob, true);
+		trace('Some mob died');
+	}
+	
+	public function shootBullet(pos:FlxPoint, target:Mob, bulletData:ProjectileData):Void
+	{
+		var bullet:Bullet = new Bullet(pos.x, pos.y, bulletData, target);
+		bullet.destroyed.add(onBulletDestroyed);
+		bullets.add(bullet);
+	}
+	
+	function onBulletDestroyed(bullet:Bullet):Void
+	{
+		bullets.remove(bullet);
 	}
 }

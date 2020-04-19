@@ -15,13 +15,16 @@ import flixel.addons.editors.tiled.TiledTileLayer;
 import flixel.addons.editors.tiled.TiledTileSet;
 import flixel.addons.editors.tiled.TiledTilePropertySet;
 import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
+import flixel.math.FlxVector;
 import flixel.tile.FlxTilemap;
 import flixel.addons.tile.FlxTilemapExt;
 import flixel.addons.tile.FlxTileSpecial;
 import haxe.ds.Map;
 import haxe.io.Path;
 import org.wildrabbit.pettd.PlayState;
+import org.wildrabbit.pettd.Turret;
 import org.wildrabbit.pettd.world.LevelDataTable.FloatVec2;
 import org.wildrabbit.pettd.world.LevelDataTable.IntVec2;
 
@@ -208,4 +211,46 @@ class Level extends TiledMap
 		foreground.clear();
 	}
 	
+	public function isValidTurretRect(pos:IntVec2, width:Int, height:Int, turrets:FlxTypedGroup<Turret>):Bool
+	{
+		var col:Int = pos.x;
+		var row:Int = pos.y;
+		var freeSpace:Bool = true;
+		while (freeSpace && row < this.height && row < pos.y + height)
+		{
+			col = pos.x;
+			while (freeSpace && col < this.width && col < pos.x + width)
+			{
+				var tileValue:Int = navigationMap.getTile(col, row);
+				var point:FlxPoint = FlxVector.get(col, row);
+				var collisions:Int = navigationMap.getTileCollisions(tileValue);
+				if (collisions == FlxObject.NONE)
+				{
+					freeSpace = false;
+					break;
+				}				
+				
+						
+				for (turret in turrets)
+				{
+					if (turret.overlapsPoint(point))
+					{
+						freeSpace = false;
+						break;
+					}
+				}
+				col++;
+				point.put();
+			}
+			row++;
+		}
+		
+		if (!freeSpace)
+		{
+			return false;
+		}
+		
+		// TODO: Check close to road
+		return true;
+	}	
 }

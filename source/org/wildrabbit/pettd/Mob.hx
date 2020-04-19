@@ -22,9 +22,12 @@ typedef MobData =
  */
 class Mob extends Character 
 {
+	static  var maxID:Int = 0;
 	var moving:Bool = false;
 	public var damage:Int;
 	public var speed:Int;
+	
+	public var mobUID:Int;
 	
 	public function new(?X:Float=0, ?Y:Float=0, mobData:MobData) 
 	{
@@ -37,6 +40,8 @@ class Mob extends Character
 		moving = false;
 		path.cancel();
 		velocity.x = velocity.y = 0;
+		
+		mobUID = Mob.maxID++;
 	}
 	
 	public function goTo(target:FlxSprite, level:Level):Void
@@ -74,5 +79,13 @@ class Mob extends Character
 			velocity.x = velocity.y = 0;
 			moving = false;
 		}
+	}
+	
+		
+	public override function takeDamage(dmg:Int):Void
+	{
+		var startHP:Int = hp;
+		super.takeDamage(dmg);		
+		trace('Mob ${mobUID} took ${startHP - hp} dmg');
 	}
 }
