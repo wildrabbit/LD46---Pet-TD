@@ -31,7 +31,7 @@ class Pickable extends FlxSprite
 		this.type = type;
 		
 		pickTimer = new FlxTimer();
-		pickTimer.start(1, onTimerComplete);
+		pickTimer.start(0.6, onTimerComplete);
 	}
 	
 	function onTimerComplete(timer:FlxTimer):Void

@@ -14,6 +14,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import flash.display.BlendMode;
 import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.entities.Mob;
 import org.wildrabbit.pettd.PlayState;
@@ -98,7 +99,7 @@ class Turret extends FlxNestedSprite
 			thickness:1,
 			color:FlxColor.fromRGB(255, 255, 255, 128)
 		};
-		
+
 		FlxSpriteUtil.drawCircle(detection, detectionRadius, detectionRadius, detectionRadius, FlxColor.TRANSPARENT, lineStyle);
 		var center:FlxPoint = getMidpoint().subtract(detectionRadius,detectionRadius);
 		

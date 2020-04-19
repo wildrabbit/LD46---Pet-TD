@@ -40,6 +40,7 @@ typedef LevelJson =
 
 	var waves: Array<WaveData>;
 	var startFood:Int;
+	var allowedTurrets:Array<Int>;
  }
 
 /**

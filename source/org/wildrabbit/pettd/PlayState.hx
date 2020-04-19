@@ -12,6 +12,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
+import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import haxe.macro.Expr.Var;
 import org.wildrabbit.pettd.entities.Bullet;
@@ -22,6 +23,7 @@ import org.wildrabbit.pettd.entities.Pet;
 import org.wildrabbit.pettd.entities.Pickable;
 import org.wildrabbit.pettd.entities.Turret;
 import org.wildrabbit.pettd.ui.HUDBar;
+import org.wildrabbit.pettd.ui.TurretButton;
 import org.wildrabbit.pettd.world.Level;
 import org.wildrabbit.pettd.world.LevelDataTable;
 
@@ -78,7 +80,13 @@ class PlayState extends FlxState
 	public var nutrientAmount:Int;
 	
 	public var nutrientGivenPerClick:Int = 10;
+	
+	public var placingMode:Bool = false;
+	public var turretPreview:FlxSprite;
+	public var selectedTurretData:TurretData;
 
+	
+	public var turretButtons:FlxTypedGroup<TurretButton>;
 	
 	// var projectiles:flxgroup, etc
 	
@@ -114,6 +122,7 @@ class PlayState extends FlxState
 		turretVFX = new FlxGroup();
 		pickables = new FlxTypedGroup<Pickable>();
 		pickablesHUD = new FlxTypedGroup<Pickable>();
+		turretButtons = new FlxTypedGroup<TurretButton>();
 		
 		loadLevelByIdx(currentLevelIdx);		
 
@@ -169,6 +178,16 @@ class PlayState extends FlxState
 				}
 				turretVFX.clear();
 			}
+			
+			if (turretButtons != null)
+			{
+				gameGroup.remove(turretButtons, true);
+				for (tVfx in turretButtons)
+				{
+					tVfx.destroy();
+				}
+				turretButtons.clear();
+			}
 		}		
 		
 		level = new Level(levelJson.levelTMXPath, this);		
@@ -206,7 +225,65 @@ class PlayState extends FlxState
 				
 		nutrientAmount = levelJson.startFood;
 		hud.init();
+		
+		gameGroup.add(turretButtons); // move to ui
+		
+		buildTurretButtons(levelJson.allowedTurrets);
+		
+		placingMode = false;
+		selectedTurretData = null;
+		turretPreview = null;
 
+	}
+	
+	function buildTurretButtons(turretIDs:Array<Int>):Void
+	{
+		var startX:Int = 32;
+		var startY:Int = FlxG.height - 64 - 4;
+		var offset:Int = 8;
+		
+		for (id in turretIDs)
+		{
+			var data:TurretData = entityLibrary.getTurretById(id);
+			if (data != null)
+			{
+				var btn:TurretButton = new TurretButton(startX, startY, data, this);
+				turretButtons.add(btn);
+			}
+		}
+	}
+	
+	public function turretButtonClicked(data:TurretData):Void
+	{
+		var coords:IntVec2 = level.coordsFromPos({x:FlxG.mouse.x, y:FlxG.mouse.y});
+		var posBis:FloatVec2 = level.posFromCoords(coords);
+					
+		
+		if (placingMode)
+		{
+			if (selectedTurretData == data)
+			{
+				turretPreview.destroy();
+				turretPreview = null;
+				remove(turretPreview);
+				placingMode = false;
+			}
+			else
+			{
+				selectedTurretData = data;
+				turretPreview.destroy();
+				remove(turretPreview);
+				turretPreview = new FlxSprite(posBis.x, posBis.y, data.uiGraphic);
+				add(turretPreview);
+			}
+		}
+		else
+		{
+			placingMode = true;
+			turretPreview = new FlxSprite(posBis.x, posBis.y, data.uiGraphic);
+			add(turretPreview);
+			selectedTurretData = data;
+		}
 	}
 	
 	function onWaveTick(timer:FlxTimer):Void
@@ -253,6 +330,7 @@ class PlayState extends FlxState
 		var mobPos:FloatVec2 = level.getSpawnPos(mobSpawnPos);
 		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, entityLibrary.getMobById(mobId), this);
 		mobs.add(randomMob);
+		mobs.sort(FlxSort.byY);
 		randomMob.goTo(pet, level);
 		randomMob.destroyedByBullet.add(onMobGotKilled);
 		randomMob.died.add(onMobDied);
@@ -282,36 +360,43 @@ class PlayState extends FlxState
 		
 		totalElapsed += elapsed;
 		
-		if (FlxG.mouse.justReleased)
+		if (placingMode)
 		{
-			var pos:FlxPoint = FlxG.mouse.getPosition();
-			
-			if (pet.overlapsPoint(pos) && nutrientAmount >= nutrientGivenPerClick)
+			var coords:IntVec2 = level.coordsFromPos({x:FlxG.mouse.x, y:FlxG.mouse.y});
+			var posBis:FloatVec2 = level.posFromCoords(coords);
+			var valid:Bool = level.isValidTurretRect(coords, selectedTurretData.width, selectedTurretData.height, turrets);
+			var hasFood:Bool = selectedTurretData.foodCost <= nutrientAmount;
+				
+			if (FlxG.mouse.justMoved)
 			{
-				nutrientAmount -= nutrientGivenPerClick;
-				usedFood.dispatch(nutrientGivenPerClick);
-				pet.giveFood(nutrientGivenPerClick);
+				turretPreview.setPosition(posBis.x, posBis.y);
+				turretPreview.color = valid ? turretPreview.color = FlxColor.fromRGB(0,228,54) : FlxColor.fromRGB(255,0,77);
+			}
+			else if (FlxG.mouse.justPressed && valid && hasFood)
+			{
+				createTurret(FlxPoint.weak(posBis.x, posBis.y), turretData);
+				
+				selectedTurretData = null;
+				turretPreview.destroy();
+				remove(turretPreview);
+				placingMode = false;
+			}
+		}
+		else
+		{
+			if (FlxG.mouse.justReleased)
+			{
+				var pos:FlxPoint = FlxG.mouse.getPosition();
+				
+				if (pet.overlapsPoint(pos) && nutrientAmount >= nutrientGivenPerClick)
+				{
+					nutrientAmount -= nutrientGivenPerClick;
+					usedFood.dispatch(nutrientGivenPerClick);
+					pet.giveFood(nutrientGivenPerClick);
+				}
+				
 			}
 			
-			
-			var coords:IntVec2 = level.coordsFromPos({x:pos.x, y:pos.y});
-			
-			if (level.isValidTurretRect(coords, turretData.width, turretData.height, turrets))
-			{
-				if (nutrientAmount >= turretData.foodCost)
-				{
-					var posBis:FloatVec2 = level.posFromCoords(coords);
-					var turret:Turret = new Turret(posBis.x, posBis.y, turretData, this);
-					turrets.add(turret);
-					nutrientAmount -= turretData.foodCost;
-					usedFood.dispatch(turretData.foodCost);
-				}
-				else
-				{
-					FlxG.log.add("Not enough food!");
-				}
-			}
-
 		}
 		
 		
@@ -330,6 +415,14 @@ class PlayState extends FlxState
 		{
 			setResult(Result.Won);
 		}
+	}
+	
+	function createTurret(pos:FlxPoint, data:TurretData):Void
+	{
+		var turret:Turret = new Turret(pos.x, pos.y, turretData, this);
+		turrets.add(turret);
+		nutrientAmount -= turretData.foodCost;
+		usedFood.dispatch(turretData.foodCost);
 	}
 	
 	function setResult(levelResult:Result):Void
@@ -434,6 +527,7 @@ class PlayState extends FlxState
 		}
 
 	}
+
 	
 	
 }

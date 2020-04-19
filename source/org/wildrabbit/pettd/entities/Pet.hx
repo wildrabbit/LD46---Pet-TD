@@ -71,6 +71,7 @@ class Pet extends Character
 	var foodTimer:FlxTimer;
 	
 	public var stateChanged:FlxTypedSignal<NeedState->Void>;
+	public var hungerChanged:FlxTypedSignal<Pet->Void>;
 	
 
 	public function new(?X:Float=0, ?Y:Float=0, petData:PetData, root:PlayState) 
@@ -100,6 +101,7 @@ class Pet extends Character
 		foodState = NeedState.Normal;
 		
 		stateChanged = new FlxTypedSignal<NeedState->Void>();
+		hungerChanged = new FlxTypedSignal<Pet->Void>();
 		
 		checkNeedState(true);
 	}
@@ -178,16 +180,19 @@ class Pet extends Character
 	{
 		hpTimer.cancel();
 		foodTimer.cancel();
-		if (hp == 0) return;
 		
-		if (foodHappy())
+		if (result == Result.Lost)
+		{
+			animation.play("damaged");
+		}
+		else if (result == Result.Won)
 		{
 			animation.play("happy");
 		}
-		else 
-		{
-			animation.play("idle");
-		}
+		
+		if (hp == 0) return;
+		
+		
 	}
 	
 	public function foodWarning():Bool
@@ -204,6 +209,7 @@ class Pet extends Character
 	{
 		var delta:Int = (foodCount < foodConsumptionRate) ? foodCount :foodConsumptionRate;
 		foodCount -= delta;
+		hungerChanged.dispatch(this);
 		
 		FlxG.log.add('Digested ${delta} so now I\'m at ${foodCount}/${foodMax} now');
 		
@@ -233,7 +239,7 @@ class Pet extends Character
 		{
 			foodCount = foodMax;
 		}
-		
+		hungerChanged.dispatch(this);
 		FlxG.log.add('Yummy! I ate ${amount} so now I\'m at ${foodCount}/${foodMax}');
 		
 		checkNeedState();
@@ -244,17 +250,17 @@ class Pet extends Character
 	{
 		if (foodCount == 0)
 		{
-			return FlxColor.RED;
+			return FlxColor.fromRGB(255,0,77);
 		}
 		else if (foodWarning())
 		{
-			return FlxColor.YELLOW;
+			return FlxColor.fromRGB(255,236,39);
 		}
 		else if (foodHappy())
 		{
-			return FlxColor.GREEN;
+			return FlxColor.fromRGB(0,228,54);
 		}
-		else return FlxColor.WHITE;
+		else return FlxColor.fromRGB(255, 241, 232);
 	}
 	
 }

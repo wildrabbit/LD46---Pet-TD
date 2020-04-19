@@ -36,10 +36,10 @@
 		},
 		"foodWarningThreshold":0.15,
 		"foodHappyThreshold":0.75,
-		"foodHPDepletionRate":8,
-		"foodHPDepletionSecs":3,
-		"foodHPRegenRate":8,
-		"foodHPRegenSecs":2,
+		"foodHPDepletionRate":2,
+		"foodHPDepletionSecs":1,
+		"foodHPRegenRate":3,
+		"foodHPRegenSecs":1,
 		"foodConsumptionRate":8,
 		"foodConsumptionSecs":2,
 		"foodMaxCapacity":100,
@@ -64,7 +64,7 @@
 					}
 				],
 				"defaultAnim":"idle",
-				"maxHP":20
+				"maxHP":50
 			},
 			"damage":8,
 			"speed":80,
@@ -72,15 +72,66 @@
 			"nutrientSpawnMin":8,
 			"nutrientSpawnMax":12,
 			"nutrientType":"food"
+		},
+		{
+			"characterData": {
+				"id":1,
+				"name":"slimey",
+				"sheetFile":"assets/images/proto-mob2.png",
+				"atlasFile":"assets/images/proto-mob2.json",
+				"prefix":"proto-mob2",
+				"postfix":".aseprite",
+				"anims":[
+					{
+						"name":"idle", 
+						"frames":[0,1], 
+						"fps":3
+					}
+				],
+				"defaultAnim":"idle",
+				"maxHP":100
+			},
+			"damage":10,
+			"speed":30,
+			"nutrientSpawnChance":70,
+			"nutrientSpawnMin":12,
+			"nutrientSpawnMax":20,
+			"nutrientType":"food"
+		},
+		{
+			"characterData": {
+				"id":2,
+				"name":"speedster",
+				"sheetFile":"assets/images/proto-mob3.png",
+				"atlasFile":"assets/images/proto-mob3.json",
+				"prefix":"proto-mob3",
+				"postfix":".aseprite",
+				"anims":[
+					{
+						"name":"idle", 
+						"frames":[0,1], 
+						"fps":4
+					}
+				],
+				"defaultAnim":"idle",
+				"maxHP":30
+			},
+			"damage":5,
+			"speed":120,
+			"nutrientSpawnChance":40,
+			"nutrientSpawnMin":5,
+			"nutrientSpawnMax":8,
+			"nutrientType":"food"
 		}
+		
 	],
 	"turrets": [
 		{
 			"id":0,
 			"baseGraphic":"assets/images/proto-turret-base.png",
 			"cannonGraphic":"assets/images/proto-turret-cannon.png",
-			"uiGraphic":"assets/images/proto-turret-base.png",
-			"fireRate":0.5,
+			"uiGraphic":"assets/images/proto-turret-ui.png",
+			"fireRate":0.4,
 			"detectionRadius":128,
 			"width":2,
 			"height":2,
@@ -88,8 +139,8 @@
 			"bulletData": 
 				{
 					"graphic":"assets/images/bullet.png",
-					"speed":120,
-					"dmg":5,
+					"speed":180,
+					"dmg":10,
 					"ttl":1,
 					"homing":false
 				}

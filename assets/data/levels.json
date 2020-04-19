@@ -7,56 +7,63 @@
 			{
 				"spawnDelay":0.2,
 				"timeMarker":2,
-				"mobs":[0,0,0,0],
+				"mobs":[0,0,0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
 				"spawnDelay":0.2,
 				"timeMarker":8,
-				"mobs":[0,0,0],
+				"mobs":[0,0,0,0],
 				"mobSpawn":"mob_waves_1"
 			},
 			{
 				"spawnDelay":0.2,
-				"timeMarker":12,
-				"mobs":[0,0,0],
+				"timeMarker":8.5,
+				"mobs":[0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			{
-				"spawnDelay":0.2,
-				"timeMarker":18,
-				"mobs":[0,0,0, 0, 0, 0],
+				"spawnDelay":0.3,
+				"timeMarker":16,
+				"mobs":[1, 1],
 				"mobSpawn":"mob_waves_1"
 			},
 			{
-				"spawnDelay":0.2,
-				"timeMarker":18.2,
-				"mobs":[0,0,0, 0, 0, 0],
+				"spawnDelay":0.3,
+				"timeMarker":20,
+				"mobs":[0,0,0, 0,0,1],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
-				"spawnDelay":0.2,
-				"timeMarker":21,
-				"mobs":[0,0,0, 0, 0, 0, 0, 0],
-				"mobSpawn":"mob_waves_0"
-			},
-			
-			{
-				"spawnDelay":0.2,
-				"timeMarker":25,
-				"mobs":[0,0,0, 0],
+				"spawnDelay":0.3,
+				"timeMarker":22,
+				"mobs":[0,0,1, 1, 1, 0, 1, 0],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
 				"spawnDelay":0.2,
 				"timeMarker":28,
-				"mobs":[0,0,0, 0, 0, 0, 0, 0, 0],
+				"mobs":[0,0,0, 0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.3,
+				"timeMarker":32,
+				"mobs":[0,0,0, 0, 0, 0,0,0,1,1],
 				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":36,
+				"mobs":[2,2,2, 2, 2, 2,2,2,2,2],
+				"mobSpawn":"mob_waves_0"
 			}
 		],
+		"allowedTurrets":[0],
 		"startFood":30
 	}
 ]
