@@ -1,6 +1,8 @@
 {
 	"pets": [
-		{
+	{
+		
+		"characterData":{
 			"id":0,
 			"name":"blobby",
 			"sheetFile":"assets/images/proto-pet.png",
@@ -12,11 +14,37 @@
 					"name":"idle", 
 					"frames":[0,1], 
 					"fps":3
+				},
+				{
+					"name":"hungry", 
+					"frames":[2,3], 
+					"fps":3
+				},
+				{
+					"name":"damaged", 
+					"frames":[4,5], 
+					"fps":3
+				},
+				{
+					"name":"happy", 
+					"frames":[6,7], 
+					"fps":3
 				}
 			],
 			"defaultAnim":"idle",
 			"maxHP":100
-		}
+		},
+		"foodWarningThreshold":0.15,
+		"foodHappyThreshold":0.85,
+		"foodHPDepletionRate":2,
+		"foodHPDepletionSecs":3,
+		"foodHPRegenRate":8,
+		"foodHPRegenSecs":2,
+		"foodConsumptionRate":15,
+		"foodConsumptionSecs":3,
+		"foodMaxCapacity":100,
+		"foodStartCapacity":65
+	}
 	],
 	"defaultPet":0,
 	"mobs": [
@@ -41,8 +69,8 @@
 			"damage":5,
 			"speed":80,
 			"nutrientSpawnChance":70,
-			"nutrientSpawnMin":5,
-			"nutrientSpawnMax":10,
+			"nutrientSpawnMin":10,
+			"nutrientSpawnMax":30,
 			"nutrientType":"food"
 		}
 	],

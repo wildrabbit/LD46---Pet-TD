@@ -1,11 +1,13 @@
 package org.wildrabbit.pettd.entities;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxBaseTilemap.FlxTilemapDiagonalPolicy;
 import flixel.util.FlxPath;
 import flixel.util.FlxSignal;
 import org.wildrabbit.pettd.AssetPaths;
+import org.wildrabbit.pettd.PlayState;
 import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.world.Level;
 
@@ -39,9 +41,9 @@ class Mob extends Character
 	
 	public var mobUID:Int;
 	
-	public function new(?X:Float=0, ?Y:Float=0, mobData:MobData) 
+	public function new(?X:Float=0, ?Y:Float=0, mobData:MobData, root:PlayState) 
 	{
-		super(X, Y, mobData.characterData);
+		super(X, Y, mobData.characterData, root);
 		
 		damage = mobData.damage;
 		speed = mobData.speed;
@@ -101,6 +103,6 @@ class Mob extends Character
 	{
 		var startHP:Int = hp;
 		super.takeDamage(dmg);		
-		trace('Mob ${mobUID} took ${startHP - hp} dmg');
+		FlxG.log.add('Mob ${mobUID} took ${startHP - hp} dmg');
 	}
 }

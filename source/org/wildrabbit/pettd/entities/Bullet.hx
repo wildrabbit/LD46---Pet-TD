@@ -73,7 +73,6 @@ class Bullet extends FlxSprite
 	
 	public function onHit():Void
 	{
-		trace("Boom!");
 		killBullet();
 	}
 	

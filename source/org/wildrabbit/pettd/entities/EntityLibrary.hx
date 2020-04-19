@@ -1,6 +1,7 @@
 package org.wildrabbit.pettd.entities;
 import org.wildrabbit.pettd.entities.Character;
 import org.wildrabbit.pettd.entities.Mob;
+import org.wildrabbit.pettd.entities.Pet.PetData;
 import org.wildrabbit.pettd.entities.Character.CharacterData;
 import org.wildrabbit.pettd.entities.Mob.MobData;
 import org.wildrabbit.pettd.entities.Turret.TurretData;
@@ -15,9 +16,9 @@ import haxe.Json;
  
 class EntityLibrary 
 {
-	public var defaultPet:CharacterData;
+	public var defaultPet:PetData;
 	
-	var allPets:Map<Int,CharacterData>;	
+	var allPets:Map<Int,PetData>;	
 	var allMobs:Map<Int,MobData>;
 	
 	var allTurrets:Map<Int,TurretData>;
@@ -36,12 +37,12 @@ class EntityLibrary
 		
 		var defaultPetIdx:Int = data.defaultPet;
 
-		var petList:Array<CharacterData> = data.pets;
-		allPets = new Map<Int,CharacterData>();
+		var petList:Array<PetData> = data.pets;
+		allPets = new Map<Int,PetData>();
 		for (entry in petList)
 		{
-			allPets.set(entry.id, entry);
-			if (entry.id == defaultPetIdx)
+			allPets.set(entry.characterData.id, entry);
+			if (entry.characterData.id == defaultPetIdx)
 			{
 				defaultPet = entry;
 			}

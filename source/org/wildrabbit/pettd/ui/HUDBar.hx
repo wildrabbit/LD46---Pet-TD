@@ -27,6 +27,7 @@ class HUDBar extends FlxGroup
 	var parent:PlayState;
 	
 	var updateTimer:FlxTimer;
+	var updateWaves:Bool;
 	
 	public function new(root:PlayState) 
 	{
@@ -54,14 +55,22 @@ class HUDBar extends FlxGroup
 		parent.addedFood.add(updateFood);
 		parent.usedFood.add(updateFood);
 		
+		updateWaves = parent.currentWaveIdx < parent.waves.length;
 		updateTimer.start(1, timerTicked, 0);
 		
 		foodTarget = food.getMidpoint();
+		
+		parent.levelOverSignal.add(onLevelOver);
 	}
 	
 	function updateHP(pet:Character, delta:Int):Void
 	{
 		hp.text = 'HP: ${pet.hp}/${pet.maxHP}';
+	}
+	
+	function onLevelOver(result:Result):Void
+	{
+		updateTimer.cancel();
 	}
 	
 	function timerText(elapsed:Float):String
@@ -71,13 +80,18 @@ class HUDBar extends FlxGroup
 	
 	function timerTicked(leTimer:FlxTimer):Void 
 	{
+		timer.text = timerText(parent.totalElapsed);	
+		if (!updateWaves)
+		{
+			return;
+		}
+
 		if (parent.currentWaveIdx == parent.waves.length)
 		{
 			waveCounter.text = waveText(parent.currentWaveIdx - 1, parent.waves.length, 0);
-			leTimer.cancel();
+			updateWaves = false;
 			return;
 		}
-		timer.text = timerText(parent.totalElapsed);	
 		var marker:Float = parent.currentWaveIdx == parent.waves.length ? parent.totalElapsed : parent.waves[parent.currentWaveIdx].timeMarker;
 		waveCounter.text = waveText(parent.currentWaveIdx, parent.waves.length, marker - parent.totalElapsed);
 	}

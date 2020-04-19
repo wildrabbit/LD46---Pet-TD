@@ -39,6 +39,7 @@ typedef LevelJson =
 	var levelTMXPath:String;
 
 	var waves: Array<WaveData>;
+	var startFood:Int;
  }
 
 /**

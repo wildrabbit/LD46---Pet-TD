@@ -19,10 +19,11 @@
 			},
 			{
 				"spawnDelay":0.2,
-				"timeMarker":8,
+				"timeMarker":12,
 				"mobs":[0,0,0],
 				"mobSpawn":"mob_waves_0"
 			}
-		]
+		],
+		"startFood":30
 	}
 ]

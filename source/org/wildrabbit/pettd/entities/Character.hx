@@ -5,6 +5,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxAssets.FlxTexturePackerSource;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import org.wildrabbit.pettd.PlayState;
 
 /**
  * ...
@@ -40,9 +41,12 @@ class Character extends FlxSprite
 	public var damaged:FlxTypedSignal<Character-> Int-> Void>;
 	public var died:FlxTypedSignal<Character-> Void>;
 	
-	public function new(?X:Float=0, ?Y:Float=0, data:CharacterData) 
+	var root:PlayState;
+	
+	public function new(?X:Float=0, ?Y:Float=0, data:CharacterData, root:PlayState) 
 	{
 		super(X, Y);
+		this.root = root;
 		
 		maxHP = hp = data.maxHP;
 				

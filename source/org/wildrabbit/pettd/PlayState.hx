@@ -4,10 +4,13 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
+import flixel.system.debug.log.LogStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import haxe.macro.Expr.Var;
@@ -73,6 +76,8 @@ class PlayState extends FlxState
 	public var totalElapsed:Float;
 	
 	public var nutrientAmount:Int;
+	
+	public var nutrientGivenPerClick:Int = 5;
 
 	
 	// var projectiles:flxgroup, etc
@@ -89,6 +94,8 @@ class PlayState extends FlxState
 		loadLevelTable();
 		
 		entityLibrary = new EntityLibrary("assets/data/entities.json");
+		turretData = entityLibrary.getTurretById(0);
+
 		
 		gameGroup = new FlxGroup();
 		add(gameGroup);
@@ -112,12 +119,7 @@ class PlayState extends FlxState
 
 		
 		result = Result.Running;
-
-
-		
-		turretData = entityLibrary.getTurretById(0);
 		totalElapsed = 0;
-		nutrientAmount = 0;
 	}
 	
 	public function loadLevelByIdx(idx:Int):Void
@@ -180,7 +182,7 @@ class PlayState extends FlxState
 		gameGroup.add(pickablesHUD);
 
 		
-		pet = new Pet(playerPos.x, playerPos.y, entityLibrary.defaultPet);
+		pet = new Pet(playerPos.x, playerPos.y, entityLibrary.defaultPet, this);
 		pet.died.add(onPetDied);
 		pet.damaged.add(onPetGotDamaged);
 		
@@ -201,7 +203,10 @@ class PlayState extends FlxState
 		allWavesSpawned = false;
 		waveTimer.start(waves[currentWaveIdx].timeMarker, onWaveTick);
 		
+				
+		nutrientAmount = levelJson.startFood;
 		hud.init();
+
 	}
 	
 	function onWaveTick(timer:FlxTimer):Void
@@ -246,7 +251,7 @@ class PlayState extends FlxState
 	function spawnMob(mobId:Int, mobSpawnPos:String):Void
 	{
 		var mobPos:FloatVec2 = level.getSpawnPos(mobSpawnPos);
-		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, entityLibrary.getMobById(mobId));
+		var randomMob: Mob = new Mob(mobPos.x, mobPos.y, entityLibrary.getMobById(mobId), this);
 		mobs.add(randomMob);
 		randomMob.goTo(pet, level);
 		randomMob.died.add(onMobDied);
@@ -262,6 +267,12 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
+		if (FlxG.keys.firstJustReleased() == FlxKey.ESCAPE)
+		{
+			FlxG.switchState(new PlayState());
+			return;
+		}
+		
 		if (result != Result.Running)		
 		{
 			// TODO: Game over transition logic
@@ -273,6 +284,15 @@ class PlayState extends FlxState
 		if (FlxG.mouse.justReleased)
 		{
 			var pos:FlxPoint = FlxG.mouse.getPosition();
+			
+			if (pet.overlapsPoint(pos) && nutrientAmount >= nutrientGivenPerClick)
+			{
+				nutrientAmount -= nutrientGivenPerClick;
+				usedFood.dispatch(nutrientGivenPerClick);
+				pet.giveFood(nutrientGivenPerClick);
+			}
+			
+			
 			var coords:IntVec2 = level.coordsFromPos({x:pos.x, y:pos.y});
 			
 			if (level.isValidTurretRect(coords, turretData.width, turretData.height, turrets))
@@ -282,6 +302,8 @@ class PlayState extends FlxState
 				turrets.add(turret);
 			}
 		}
+		
+		
 		
 		
 		for (mob in mobs)
@@ -302,13 +324,14 @@ class PlayState extends FlxState
 	function setResult(levelResult:Result):Void
 	{
 		result = levelResult;
+		var resultStyle:LogStyle = new LogStyle("[RESULT]",FlxColor.fromRGB(200,128,255,255));
 		if (levelResult == Result.Lost)
 		{
-			trace("Game lost!");
+			FlxG.log.advanced("Game lost!", resultStyle);
 		}
 		else if (levelResult == Result.Won)
 		{
-			trace("Game won!");
+			FlxG.log.advanced("Game won!", resultStyle);
 		}
 		
 		for (mob in mobs)
@@ -329,7 +352,7 @@ class PlayState extends FlxState
 	
 	function onPetGotDamaged(pet:Character, amount:Int):Void
 	{
-		trace('Ouch! pet took ${amount} damage. current hp: ${pet.hp}');
+		FlxG.log.add('Ouch! pet took ${amount} damage. current hp: ${pet.hp}');
 	}
 	
 	function mobPetCollision(obj1:FlxObject, obj2:FlxObject):Void
@@ -355,7 +378,7 @@ class PlayState extends FlxState
 		var mob:Mob = cast mobChar;
 		entities.remove(mob, true);
 		mobs.remove(mob, true);
-		trace('Some mob died');
+		FlxG.log.add('Some mob died');
 		
 		var rnd:FlxRandom = new FlxRandom();
 		if (rnd.bool(mob.spawnChance))
@@ -392,7 +415,7 @@ class PlayState extends FlxState
 			
 			pickables.remove(pickable, true);
 			pickablesHUD.add(pickable);
-			FlxTween.tween(pickable, {x:hud.foodTarget.x, y:hud.foodTarget.y}, 0.6, { ease:FlxEase.cubeOut , onComplete: grabbedFood});			
+			FlxTween.tween(pickable, {x:hud.foodTarget.x, y:hud.foodTarget.y}, 0.8, { ease:FlxEase.cubeOut , onComplete: grabbedFood});			
 		}
 
 	}
