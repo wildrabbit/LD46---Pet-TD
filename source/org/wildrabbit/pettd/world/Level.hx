@@ -17,6 +17,7 @@ import flixel.addons.editors.tiled.TiledTilePropertySet;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
+import flixel.math.FlxRect;
 import flixel.math.FlxVector;
 import flixel.tile.FlxTilemap;
 import flixel.addons.tile.FlxTilemapExt;
@@ -99,8 +100,6 @@ class Level extends TiledMap
 		foreground = new FlxGroup();
 		background = new FlxGroup();
 		
-		
-		FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
 		
 		// load images
 		
@@ -215,11 +214,20 @@ class Level extends TiledMap
 	{
 		var col:Int = pos.x;
 		var row:Int = pos.y;
+		if (col < 0 || col > this.width - width || row < 0 || row > this.height - height)
+		{
+			return false;
+		}
+		
+		var coords:FloatVec2 = posFromCoords(pos);
+		
+		var ourRect:FlxRect = FlxRect.get(coords.x, coords.y, width * this.tileWidth, height * this.tileHeight);
+		
 		var freeSpace:Bool = true;
 		while (freeSpace && row < this.height && row < pos.y + height)
 		{
 			col = pos.x;
-			while (freeSpace && col < this.width && col < pos.x + width)
+			while (freeSpace && col < pos.x + width)
 			{
 				var tileValue:Int = navigationMap.getTile(col, row);
 				var point:FlxPoint = FlxVector.get(col, row);
@@ -233,7 +241,9 @@ class Level extends TiledMap
 						
 				for (turret in turrets)
 				{
-					if (turret.overlapsPoint(point))
+					var turRect:FlxRect = FlxRect.get(turret.x, turret.y, turret.width, turret.height);
+
+					if (ourRect.overlaps(turRect))
 					{
 						freeSpace = false;
 						break;

@@ -28,6 +28,14 @@ typedef ProjectileData =
 	var ?homing:Bool;
 }
 
+typedef SlowingAttackData =
+{
+	var selfGraphic:FlxGraphicAsset;
+	var mobGraphic:FlxGraphicAsset;
+	var speedDelta:Int;
+	var duration:Float;
+}
+
 typedef TurretData = {
 	var id:Int;
 	var baseGraphic:FlxGraphicAsset;
@@ -39,6 +47,7 @@ typedef TurretData = {
 	var height:Int;
 	
 	var ?bulletData:ProjectileData;	
+	var ?slowData:SlowingAttackData;
 	
 	var foodCost:Int;
 }
@@ -56,6 +65,8 @@ class Turret extends FlxNestedSprite
 	var mobs:FlxTypedGroup<Mob>;
 	var bulletData:ProjectileData;
 	
+	var freezeData:SlowingAttackData;
+	
 	var fireRate:Float;
 	var detectionRadius:Float;
 	
@@ -64,6 +75,9 @@ class Turret extends FlxNestedSprite
 	var fireTimer:FlxTimer;
 	var fireReady:Bool;
 	var detection:FlxSprite;
+	
+	var freezeTimer:FlxTimer;
+	var freezeReady:Bool;
 	
 	var turretActive:Bool;
 	
@@ -83,13 +97,25 @@ class Turret extends FlxNestedSprite
 		if (turretData.bulletData != null)
 		{
 			bulletData = turretData.bulletData;			
+			
+			cannonSprite = new FlxNestedSprite(X,Y);
+			add(cannonSprite);
+			cannonSprite.x = cannonSprite.y = 0;
+			cannonSprite.loadRotatedGraphic(turretData.cannonGraphic, 360);
+			cannonSprite.angle = 0;	
+			fireTimer = new FlxTimer();
+			fireReady = true;
+		
 		}
 		
-		cannonSprite = new FlxNestedSprite(X,Y);
-		add(cannonSprite);
-		cannonSprite.x = cannonSprite.y = 0;
-		cannonSprite.loadRotatedGraphic(turretData.cannonGraphic, 360);
-		cannonSprite.angle = 0;
+		if (turretData.slowData != null)
+		{
+			freezeData = turretData.slowData;
+			freezeTimer = new FlxTimer();
+			freezeTimer.start(fireRate / 2, function(t:FlxTimer):Void { t.cancel(); freezeReady = true; });
+			freezeReady = false;
+		}
+		
 		
 		
 		detection = new FlxSprite();
@@ -108,8 +134,6 @@ class Turret extends FlxNestedSprite
 		
 		this.mobs = root.mobs;
 		
-		fireTimer = new FlxTimer();
-		fireReady = true;
 		turretActive = true;
 	}
 	
@@ -121,10 +145,22 @@ class Turret extends FlxNestedSprite
 	override public function update(elapsed:Float):Void 
 	{
 		if (!turretActive) return;
-		
-		var lastAngle:Float = cannonSprite.relativeAngle;
 		super.update(elapsed);
 		
+		if (bulletData != null)
+		{
+			updateBullet();
+		}
+		else if (freezeData != null)
+		{
+			updateFreeze();
+		}
+		
+	}
+	
+	function updateBullet():Void
+	{
+		var lastAngle:Float = cannonSprite.relativeAngle;
 		var minMobDistance:Float = Math.POSITIVE_INFINITY;
 		var targetCandidate:Mob = null;
 		var center:FlxPoint = getMidpoint();
@@ -154,6 +190,44 @@ class Turret extends FlxNestedSprite
 		{
 			fire();
 		}
+	}
+	
+	function updateFreeze():Void
+	{
+		if (canFreeze())
+		{
+			var targetsInRange:Array<Mob> = new Array<Mob>();
+			for (mob in mobs)
+			{
+				if (FlxMath.distanceBetween(mob, this) <= detectionRadius)
+				{
+					targetsInRange.push(mob);
+				}
+			}
+			
+			if (targetsInRange.length > 0)
+			{
+				// TODO: Prepare attack vfx
+				for (mob in targetsInRange)
+				{
+					mob.applySlow(freezeData.speedDelta, freezeData.duration, freezeData.mobGraphic);
+				}
+				freezeReady = false;
+				freezeTimer.start(fireRate, onFreezeReady);
+			}
+				
+		}
+	}
+	
+	function onFreezeReady(timer:FlxTimer):Void
+	{
+		freezeTimer.cancel();
+		freezeReady = true;
+	}
+	
+	function canFreeze():Bool
+	{
+		return freezeReady;
 	}
 	
 	function canFire():Bool

@@ -65,5 +65,72 @@
 		],
 		"allowedTurrets":[0],
 		"startFood":30
+	},
+	{
+		"id":1,
+		"name": "L'autre test level",
+		"levelTMXPath": "assets/data/test-level1.tmx",
+		"waves":[
+			{
+				"spawnDelay":0.2,
+				"timeMarker":2,
+				"mobs":[0,0,2,2,2,0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":6,
+				"mobs":[0,0,0,0],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":8,
+				"mobs":[0,0,0,0],
+				"mobSpawn":"mob_waves_0"
+			},
+			{
+				"spawnDelay":0.3,
+				"timeMarker":12,
+				"mobs":[1, 1],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.3,
+				"timeMarker":16,
+				"mobs":[0,0,0, 0,0,1],
+				"mobSpawn":"mob_waves_2"
+			},
+			
+			{
+				"spawnDelay":0.3,
+				"timeMarker":20,
+				"mobs":[0,0,1, 1, 1, 0, 1, 0],
+				"mobSpawn":"mob_waves_2"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":23,
+				"mobs":[0,0,0, 0],
+				"mobSpawn":"mob_waves_1"
+			},
+			
+			{
+				"spawnDelay":0.3,
+				"timeMarker":26,
+				"mobs":[0,0,0, 0, 0, 0,0,0,1,1],
+				"mobSpawn":"mob_waves_0"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":29,
+				"mobs":[2,2,2, 2, 2, 2,2,2,2,2],
+				"mobSpawn":"mob_waves_0"
+			}
+		],
+		"allowedTurrets":[0,1],
+		"startFood":40
 	}
 ]

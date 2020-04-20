@@ -144,6 +144,24 @@
 					"ttl":1,
 					"homing":false
 				}
+		},
+		{
+			"id":1,
+			"baseGraphic":"assets/images/proto-turret-base2.png",
+			"cannonGraphic":"",
+			"uiGraphic":"assets/images/proto-turret-base2.png",
+			"fireRate":0.8,
+			"detectionRadius":128,
+			"width":2,
+			"height":2,
+			"foodCost":25,
+			"slowData": 
+				{
+					"selfGraphic":"",
+					"mobGraphic":"assets/images/freeze-vfx.png",
+					"speedDelta":-60,
+					"duration":3
+				}
 		}
 	]
 }

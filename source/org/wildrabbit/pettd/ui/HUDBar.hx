@@ -6,6 +6,7 @@ import flixel.group.FlxGroup;
 import flixel.input.FlxPointer;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import org.wildrabbit.pettd.PlayState;
@@ -19,11 +20,16 @@ import org.wildrabbit.pettd.entities.Pet.NeedState;
  */
 class HUDBar extends FlxGroup 
 {
+	var level:FlxText;
 	var hp:FlxText;
 	var waveCounter:FlxText;
 	var timer:FlxText;
 	var food:FlxText;
 	var hunger:FlxText;
+	
+	public var turretsLabel:FlxText;
+	
+	public var interactionsLabel:FlxText;
 	
 	public var foodTarget:FlxPoint;
 	
@@ -42,21 +48,47 @@ class HUDBar extends FlxGroup
 	
 	public function init():Void
 	{
-		hp = new FlxText(FlxG.width - 120, 0, 120, 'HP: ${parent.pet.hp}/${parent.pet.maxHP}', 12);
-		add(hp);
+		var startX:Float = FlxG.width - 128  + 8;
+		var startY:Float = 0;
 		
-		timer = new FlxText(0, 0, 120, timerText(parent.totalElapsed), 12);
+		level = new FlxText(startX, startY, 120, parent.levelName, 12);
+		level.color = FlxColor.fromRGB(41,173,255);
+		add(level);
+		startY += level.height + 2;
+		
+		timer = new FlxText(startX, startY, 120, timerText(parent.totalElapsed), 12);
 		add(timer);
+		startY += timer.height + 2;
 		
-		waveCounter = new FlxText(124, 0, 240,  waveText(parent.currentWaveIdx, parent.waves.length, parent.waves[parent.currentWaveIdx].timeMarker - parent.totalElapsed), 12);
+		waveCounter = new FlxText(startX, startY, 120,  waveText(parent.currentWaveIdx, parent.waves.length, parent.waves[parent.currentWaveIdx].timeMarker), 12);
 		add(waveCounter);
-		
-		food = new FlxText(FlxG.width - 120, 16, 120, 'Food: ${parent.nutrientAmount}', 12);
+		startY += waveCounter.height + 2;
+		waveCounter.wordWrap = true;
+		food = new FlxText(startX, startY, 120, 'Food: ${parent.nutrientAmount}', 14);
+		food.color = FlxColor.fromRGB(0,228,54);
+		food.alignment = FlxTextAlign.CENTER;
 		add(food);
+		startY += food.height + 4;
+
+		turretsLabel = new FlxText(startX, startY, 120, "Turrets", 12);
+		turretsLabel.alignment = FlxTextAlign.CENTER;
+		turretsLabel.color = FlxColor.fromRGB(41,173,255);
+		add(turretsLabel);
 		
-		hunger = new FlxText(FlxG.width - 120, 30, 120, hungerText(), 12);
+		interactionsLabel = new FlxText(startX, startY + 96, 120, "Interactions", 12);
+		interactionsLabel.color = FlxColor.fromRGB(41, 173, 255);
+		interactionsLabel.alignment = FlxTextAlign.CENTER;
+		add(interactionsLabel);
+		
+		var botStartY:Float = FlxG.height - 64;
+		hp = new FlxText(startX, botStartY, 120, 'HP: ${parent.pet.hp}/${parent.pet.maxHP}', 12);
+		add(hp);
+		botStartY += hp.height + 2;
+		
+		hunger = new FlxText(startX, botStartY, 120, hungerText(), 12);
 		hunger.color = parent.pet.getHungerStatusColour();
 		add(hunger);
+		
 		
 		parent.pet.stateChanged.add(updateHungerNeed);
 		parent.pet.hungerChanged.add(updateHungerPet);
@@ -104,17 +136,24 @@ class HUDBar extends FlxGroup
 
 		if (parent.currentWaveIdx == parent.waves.length)
 		{
-			waveCounter.text = waveText(parent.currentWaveIdx - 1, parent.waves.length, 0);
+			waveCounter.text = waveText(parent.currentWaveIdx - 1, parent.waves.length, -1);
 			updateWaves = false;
 			return;
 		}
-		var marker:Float = parent.currentWaveIdx == parent.waves.length ? parent.totalElapsed : parent.waves[parent.currentWaveIdx].timeMarker;
-		waveCounter.text = waveText(parent.currentWaveIdx, parent.waves.length, marker - parent.totalElapsed);
+		waveCounter.text = waveText(parent.currentWaveIdx, parent.waves.length, parent.waves[parent.currentWaveIdx].timeMarker);
 	}
 	
-	function waveText(idx:Int, total:Int, remaining:Float):String
+	function waveText(idx:Int, total:Int, marker:Float):String
 	{
-		return 'Wave: ${idx + 1}/${total}, timeTillNext:${FlxStringUtil.formatTime(remaining)}';
+		return 'Wave: ${idx + 1}/${total}';
+		/*if (marker < 0)
+		{
+			return 'Wave: ${idx + 1}/${total}';
+		}
+		else
+		{
+			return 'Wave: ${idx + 1}/${total} \nNext at:${FlxStringUtil.formatTime(marker)}';
+		}*/
 	}
 	
 	function updateFood(delta:Int):Void

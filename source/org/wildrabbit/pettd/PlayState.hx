@@ -1,5 +1,6 @@
 package org.wildrabbit.pettd;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -23,6 +24,7 @@ import org.wildrabbit.pettd.entities.Pet;
 import org.wildrabbit.pettd.entities.Pickable;
 import org.wildrabbit.pettd.entities.Turret;
 import org.wildrabbit.pettd.ui.HUDBar;
+import org.wildrabbit.pettd.ui.InteractionButton;
 import org.wildrabbit.pettd.ui.TurretButton;
 import org.wildrabbit.pettd.world.Level;
 import org.wildrabbit.pettd.world.LevelDataTable;
@@ -44,6 +46,7 @@ class PlayState extends FlxState
 	
 	public var pet:Pet; // Pet.
 	public var turrets:FlxTypedGroup<Turret>;
+	public var mobsVFX:FlxTypedGroup<FlxSprite>;
 	public var mobs:FlxTypedGroup<Mob>;
 	public var bullets:FlxTypedGroup<Bullet>;
 	public var pickables:FlxTypedGroup<Pickable>;
@@ -71,7 +74,6 @@ class PlayState extends FlxState
 	public var waves:Array<WaveData>;
 	var allWavesSpawned:Bool;
 	
-	var turretData:TurretData;
 	
 	public var turretVFX:FlxGroup;
 	
@@ -88,6 +90,24 @@ class PlayState extends FlxState
 	
 	public var turretButtons:FlxTypedGroup<TurretButton>;
 	
+	public var restartReady:Bool;
+	
+	public var showTurretArea:Bool;
+	
+	public function new(?startIdx:Int = 0) :Void
+	{
+		super();
+		currentLevelIdx = startIdx;
+	}
+	
+	public var mobVFXTable:Map<Mob,FlxSprite>;
+	
+	var hudCamera:FlxCamera;
+	var mainCamera:FlxCamera;
+	
+	public var levelName:String;
+	
+	
 	// var projectiles:flxgroup, etc
 	
 	override public function create():Void
@@ -96,19 +116,25 @@ class PlayState extends FlxState
 
 		FlxG.mouse.visible = true;
 		
-		bgColor = 0xff330033; // ARGB?
-		currentLevelIdx = 0;
+		hudCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		hudCamera.bgColor = FlxColor.TRANSPARENT;
+		mainCamera = new FlxCamera(0, 0, 640, 480);
+		mainCamera.bgColor = 0xff330033;
+		
+		FlxG.cameras.reset(mainCamera);
+		FlxG.cameras.add(hudCamera);
+		FlxCamera.defaultCameras = [mainCamera];
+		
 		
 		loadLevelTable();
 		
 		entityLibrary = new EntityLibrary("assets/data/entities.json");
-		turretData = entityLibrary.getTurretById(0);
-
 		
 		gameGroup = new FlxGroup();
 		add(gameGroup);
 		
 		hud = new HUDBar(this);
+		hud.cameras = [hudCamera];
 		add(hud);
 		
 		addedFood = new FlxTypedSignal<Int->Void>();
@@ -117,23 +143,31 @@ class PlayState extends FlxState
 		
 		entities = new FlxGroup();
 		mobs = new FlxTypedGroup<Mob>();
+		mobsVFX = new FlxTypedGroup<FlxSprite>();
 		turrets = new FlxTypedGroup<Turret>();
 		bullets = new FlxTypedGroup<Bullet>();
 		turretVFX = new FlxGroup();
 		pickables = new FlxTypedGroup<Pickable>();
 		pickablesHUD = new FlxTypedGroup<Pickable>();
+		pickablesHUD.cameras = [hudCamera];
 		turretButtons = new FlxTypedGroup<TurretButton>();
+		turretButtons.cameras = [hudCamera];
+		
+		mobVFXTable = new Map<Mob, FlxSprite>();
 		
 		loadLevelByIdx(currentLevelIdx);		
 
 		
 		result = Result.Running;
 		totalElapsed = 0;
+		restartReady = false;
+		showTurretArea = true;
 	}
 	
 	public function loadLevelByIdx(idx:Int):Void
 	{
 		var level:LevelJson = levelDataTable.getLevelAt(idx);
+		levelName = 'Level ${idx + 1}';
 		loadLevel(level);
 	}
 	
@@ -205,12 +239,16 @@ class PlayState extends FlxState
 		pet.died.add(onPetDied);
 		pet.damaged.add(onPetGotDamaged);
 		
+		mobVFXTable.clear();
+		
 		mobs.clear();
+		mobsVFX.clear();
 		turrets.clear();
 
 		entities.add(pickables);
 		entities.add(pet);
 		entities.add(turrets);
+		entities.add(mobsVFX);		
 		entities.add(mobs);
 		
 	
@@ -229,6 +267,7 @@ class PlayState extends FlxState
 		gameGroup.add(turretButtons); // move to ui
 		
 		buildTurretButtons(levelJson.allowedTurrets);
+		buildInteractionButtons();
 		
 		placingMode = false;
 		selectedTurretData = null;
@@ -238,8 +277,8 @@ class PlayState extends FlxState
 	
 	function buildTurretButtons(turretIDs:Array<Int>):Void
 	{
-		var startX:Int = 32;
-		var startY:Int = FlxG.height - 64 - 4;
+		var startX:Int = FlxG.width - 128 + 16;
+		var startY:Int = 128;
 		var offset:Int = 8;
 		
 		for (id in turretIDs)
@@ -248,8 +287,11 @@ class PlayState extends FlxState
 			if (data != null)
 			{
 				var btn:TurretButton = new TurretButton(startX, startY, data, this);
+				btn.cameras = [hudCamera];
 				turretButtons.add(btn);
+				startX += Math.floor(btn.width) + offset;
 			}
+
 		}
 	}
 	
@@ -348,13 +390,38 @@ class PlayState extends FlxState
 		
 		if (FlxG.keys.firstJustReleased() == FlxKey.ESCAPE)
 		{
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new PlayState(0));
 			return;
+		}
+		
+		if (FlxG.keys.firstJustReleased() == FlxKey.F1)
+		{
+			if (showTurretArea)
+			{
+				turretVFX.visible = false;
+				showTurretArea = false;
+			}
+			else
+			{
+				turretVFX.visible = true;
+				showTurretArea = true;
+			}
 		}
 		
 		if (result != Result.Running)		
 		{
-			// TODO: Game over transition logic
+			if (restartReady && (FlxG.keys.firstJustPressed() >= 0 || FlxG.mouse.justPressed))
+			{
+				if (result == Won)
+				{
+					// TODO: Move to game over if last level
+					FlxG.switchState(new PlayState(currentLevelIdx < levelDataTable.numLevels - 1 ? currentLevelIdx + 1: 0));
+				}
+				else
+				{
+					FlxG.switchState(new PlayState(currentLevelIdx));
+				}
+			}
 			return;
 		}
 		
@@ -362,7 +429,8 @@ class PlayState extends FlxState
 		
 		if (placingMode)
 		{
-			var coords:IntVec2 = level.coordsFromPos({x:FlxG.mouse.x, y:FlxG.mouse.y});
+			var pos:FlxPoint = FlxG.mouse.getPositionInCameraView(mainCamera);
+			var coords:IntVec2 = level.coordsFromPos({x:pos.x, y:pos.y});
 			var posBis:FloatVec2 = level.posFromCoords(coords);
 			var valid:Bool = level.isValidTurretRect(coords, selectedTurretData.width, selectedTurretData.height, turrets);
 			var hasFood:Bool = selectedTurretData.foodCost <= nutrientAmount;
@@ -374,7 +442,7 @@ class PlayState extends FlxState
 			}
 			else if (FlxG.mouse.justPressed && valid && hasFood)
 			{
-				createTurret(FlxPoint.weak(posBis.x, posBis.y), turretData);
+				createTurret(FlxPoint.weak(posBis.x, posBis.y), selectedTurretData);
 				
 				selectedTurretData = null;
 				turretPreview.destroy();
@@ -384,17 +452,28 @@ class PlayState extends FlxState
 		}
 		else
 		{
+			var pos:FlxPoint = FlxG.mouse.getPositionInCameraView(mainCamera);
+				
 			if (FlxG.mouse.justReleased)
 			{
-				var pos:FlxPoint = FlxG.mouse.getPosition();
 				
 				if (pet.overlapsPoint(pos) && nutrientAmount >= nutrientGivenPerClick)
 				{
 					nutrientAmount -= nutrientGivenPerClick;
 					usedFood.dispatch(nutrientGivenPerClick);
 					pet.giveFood(nutrientGivenPerClick);
+				}				
+			}
+			
+			if (FlxG.mouse.justMoved)
+			{
+				for (pickable in pickables)
+				{
+					if (pickable.overlapsPoint(pos))
+					{
+						pickable.collect();
+					}
 				}
-				
 			}
 			
 		}
@@ -406,6 +485,10 @@ class PlayState extends FlxState
 		{
 			FlxG.collide(mob, level.navigationMap);
 			FlxG.overlap(mob, pet, mobPetCollision);
+			if (mobVFXTable.exists(mob))
+			{
+				mobVFXTable[mob].setPosition(mob.x, mob.y);
+			}
 		}
 		
 		FlxG.overlap(bullets, mobs, onBulletHitMob);
@@ -419,10 +502,10 @@ class PlayState extends FlxState
 	
 	function createTurret(pos:FlxPoint, data:TurretData):Void
 	{
-		var turret:Turret = new Turret(pos.x, pos.y, turretData, this);
+		var turret:Turret = new Turret(pos.x, pos.y, data, this);
 		turrets.add(turret);
-		nutrientAmount -= turretData.foodCost;
-		usedFood.dispatch(turretData.foodCost);
+		nutrientAmount -= data.foodCost;
+		usedFood.dispatch(data.foodCost);
 	}
 	
 	function setResult(levelResult:Result):Void
@@ -446,6 +529,9 @@ class PlayState extends FlxState
 		waveTimer.cancel();
 		spawnTimer.cancel();
 		levelOverSignal.dispatch(result);
+		
+		var timer:FlxTimer = new FlxTimer();
+		timer.start(2, function(parameter0:FlxTimer):Void { restartReady = true; });
 	}
 	
 	function onPetDied(pet:Character):Void
@@ -467,6 +553,8 @@ class PlayState extends FlxState
 		mob.petHit();
 		
 		pet.takeDamage(mob.damage);
+		
+		
 	}
 	
 	function onBulletHitMob(obj1:FlxObject, obj2:FlxObject):Void
@@ -528,6 +616,42 @@ class PlayState extends FlxState
 
 	}
 
+	public function addMobVFX(vfx:FlxSprite, mob:Mob):Void
+	{
+		if (!mobVFXTable.exists(mob))
+		{
+			mobVFXTable[mob] = vfx;
+			mobsVFX.add(vfx);
+		}
+	}
 	
+	public function removeMobVFX(mob:Mob):Void
+	{
+		if (mobVFXTable.exists(mob))
+		{
+			mobsVFX.remove(mobVFXTable[mob]);
+			mobVFXTable.remove(mob);
+		}
+	}
+	
+	public function interactionButtonClicked(btn:InteractionButton):Void
+	{
+		if(btn.interaction == "feed" && nutrientAmount >= nutrientGivenPerClick)
+		{
+			nutrientAmount -= nutrientGivenPerClick;
+			usedFood.dispatch(nutrientGivenPerClick);
+			pet.giveFood(nutrientGivenPerClick);
+		}
+	}
+	
+	function buildInteractionButtons():Void
+	{
+		var startX:Int = FlxG.width - 128 + 32;
+		var startY:Int = 224;
+		var offset:Int = 8;
+		
+		var feedButton:InteractionButton = new InteractionButton(startX, startY, false, "assets/images/feed-btn.png", "feed", nutrientGivenPerClick, this);
+		hud.add(feedButton);
+	}
 	
 }

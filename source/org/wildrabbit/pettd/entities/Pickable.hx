@@ -36,6 +36,12 @@ class Pickable extends FlxSprite
 	
 	function onTimerComplete(timer:FlxTimer):Void
 	{
+		collect();
+	}
+	
+	public function collect():Void
+	{
+		pickTimer.cancel();
 		root.autoPick(this);
 	}
 	

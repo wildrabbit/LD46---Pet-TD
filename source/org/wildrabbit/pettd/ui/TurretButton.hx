@@ -1,6 +1,7 @@
 package org.wildrabbit.pettd.ui;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.text.FlxText;
 import flixel.text.FlxText.FlxTextAlign;
@@ -30,20 +31,22 @@ class TurretButton extends FlxSpriteGroup
 		parent.usedFood.add(updateState);
 		
 		btn = new FlxButton(0, 0, "", buttonClicked);		
-		btn.makeGraphic(64, 64, FlxColor.fromRGB(29,43,83));
+		btn.makeGraphic(32, 32, FlxColor.fromRGB(29,43,83));
 		add(btn);
 		
 		icon = new FlxSprite(0, 0, turretData.uiGraphic);
+		icon.scale = FlxPoint.weak(0.5, 0.5);
+		icon.updateHitbox();
 		icon.x = (btn.width - icon.width) / 2;
 		icon.y = (btn.height - icon.height) / 2;
 		add(icon);
 		
-		leText = new FlxText(0, 0, 64, '${data.foodCost}', 16);
+		leText = new FlxText(0, 0, 32, '${data.foodCost}', 16);
 		add(leText);
 		leText.color = FlxColor.fromRGB(255, 241, 232);
 		leText.alignment = FlxTextAlign.CENTER;
 		leText.x = x + (btn.width - leText.width) * 0.5;
-		leText.y = y + btn.height - leText.height;
+		leText.y = y + btn.height + 4;
 		
 		remove(btn.label);
 		btn.label.destroy();
