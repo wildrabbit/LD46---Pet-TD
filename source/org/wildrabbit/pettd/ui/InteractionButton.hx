@@ -44,6 +44,7 @@ class InteractionButton extends FlxSpriteGroup
 		
 		cost = new FlxText(0, 0, 64, '${interactionCost}', 16);
 		add(cost);
+		cost.color = 0xfff6da63;
 		cost.alignment = FlxTextAlign.CENTER;
 		cost.x = x + (btn.width - cost.width) * 0.5;
 		cost.y = y + btn.height + 4;

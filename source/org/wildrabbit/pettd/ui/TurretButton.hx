@@ -31,7 +31,7 @@ class TurretButton extends FlxSpriteGroup
 		parent.usedFood.add(updateState);
 		
 		btn = new FlxButton(0, 0, "", buttonClicked);		
-		btn.makeGraphic(32, 32, FlxColor.fromRGB(29,43,83));
+		btn.makeGraphic(32, 32, 0xffda2d2d);
 		add(btn);
 		
 		icon = new FlxSprite(0, 0, turretData.uiGraphic);
@@ -43,7 +43,7 @@ class TurretButton extends FlxSpriteGroup
 		
 		leText = new FlxText(0, 0, 32, '${data.foodCost}', 16);
 		add(leText);
-		leText.color = FlxColor.fromRGB(255, 241, 232);
+		leText.color = 0xfff6da63;
 		leText.alignment = FlxTextAlign.CENTER;
 		leText.x = x + (btn.width - leText.width) * 0.5;
 		leText.y = y + btn.height + 4;

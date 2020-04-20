@@ -52,41 +52,44 @@ class HUDBar extends FlxGroup
 		var startY:Float = 0;
 		
 		level = new FlxText(startX, startY, 120, parent.levelName, 12);
-		level.color = FlxColor.fromRGB(41,173,255);
+		level.color = 0xffda2d2d;
 		add(level);
 		startY += level.height + 2;
 		
 		timer = new FlxText(startX, startY, 120, timerText(parent.totalElapsed), 12);
+		timer.color = 0xf6da63;
 		add(timer);
 		startY += timer.height + 2;
 		
 		waveCounter = new FlxText(startX, startY, 120,  waveText(parent.currentWaveIdx, parent.waves.length, parent.waves[parent.currentWaveIdx].timeMarker), 12);
 		add(waveCounter);
+		waveCounter.color = 0xfff6da63;
 		startY += waveCounter.height + 2;
 		waveCounter.wordWrap = true;
 		food = new FlxText(startX, startY, 120, 'Food: ${parent.nutrientAmount}', 14);
-		food.color = FlxColor.fromRGB(0,228,54);
+		food.color = 0xffeb8242;
 		food.alignment = FlxTextAlign.CENTER;
 		add(food);
 		startY += food.height + 4;
 
 		turretsLabel = new FlxText(startX, startY, 120, "Turrets", 12);
 		turretsLabel.alignment = FlxTextAlign.CENTER;
-		turretsLabel.color = FlxColor.fromRGB(41,173,255);
+		turretsLabel.color = 0xffda2d2d;
 		add(turretsLabel);
 		
 		interactionsLabel = new FlxText(startX, startY + 96, 120, "Interactions", 12);
-		interactionsLabel.color = FlxColor.fromRGB(41, 173, 255);
+		interactionsLabel.color = 0xffda2d2d;
 		interactionsLabel.alignment = FlxTextAlign.CENTER;
 		add(interactionsLabel);
 		
 		var botStartY:Float = FlxG.height - 64;
 		hp = new FlxText(startX, botStartY, 120, 'HP: ${parent.pet.hp}/${parent.pet.maxHP}', 12);
+		hp.color = 0xfff6da63;
 		add(hp);
 		botStartY += hp.height + 2;
 		
 		hunger = new FlxText(startX, botStartY, 120, hungerText(), 12);
-		hunger.color = parent.pet.getHungerStatusColour();
+		hunger.color = 0xfff6da63;
 		add(hunger);
 		
 		
@@ -107,7 +110,12 @@ class HUDBar extends FlxGroup
 	
 	function hungerText():String
 	{
-		return 'Hunger: ${parent.pet.foodCount}/${parent.pet.foodMax}';
+		var s:String = 'Hunger lv: ${parent.pet.foodCount}/${parent.pet.foodMax}';
+		if (parent.pet.foodHappy())
+		{
+			s += " =)";
+		}
+		return s;
 	}
 	
 	function updateHP(pet:Character, delta:Int):Void

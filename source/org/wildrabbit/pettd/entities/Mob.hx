@@ -1,6 +1,7 @@
 package org.wildrabbit.pettd.entities;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxBackdrop;
 import flixel.math.FlxPoint;
@@ -65,7 +66,7 @@ class Mob extends Character
 		moving = false;
 		path.cancel();
 		velocity.x = velocity.y = 0;
-		
+
 		spawnChance = mobData.nutrientSpawnChance;
 		spawnMin = mobData.nutrientSpawnMin;
 		spawnMax = mobData.nutrientSpawnMax;
@@ -122,11 +123,20 @@ class Mob extends Character
 	{
 		super.update(elapsed);
 		
-		if (moving && path.finished)
+		if (moving )
 		{
-			path.cancel();
-			velocity.x = velocity.y = 0;
-			moving = false;
+			if (path.finished)
+			{
+				path.cancel();
+				velocity.x = velocity.y = 0;
+				moving = false;
+			}
+			else
+			{
+				if (velocity.x >= 0) facing = FlxObject.RIGHT;
+				else facing = FlxObject.LEFT;
+				
+			}
 		}
 	}
 	

@@ -72,7 +72,7 @@ class Pet extends Character
 	
 	public var stateChanged:FlxTypedSignal<NeedState->Void>;
 	public var hungerChanged:FlxTypedSignal<Pet->Void>;
-	
+	var oldAnim:String;
 
 	public function new(?X:Float=0, ?Y:Float=0, petData:PetData, root:PlayState) 
 	{
@@ -104,6 +104,16 @@ class Pet extends Character
 		hungerChanged = new FlxTypedSignal<Pet->Void>();
 		
 		checkNeedState(true);
+	}
+	
+	function animEnd(aname:String):Void
+	{
+		if (aname == "hit")
+		{
+			animation.play(oldAnim);
+			oldAnim = "";
+			animation.finishCallback = null;
+		}
 	}
 	
 	function checkNeedState(?forced:Bool = false):Void
@@ -224,6 +234,15 @@ class Pet extends Character
 		checkNeedState();
 	}
 	
+	public function hitByMob(mdamage:Int):Void
+	{
+		takeDamage(mdamage);
+		if(animation.curAnim.name != "hit")
+			oldAnim = animation.curAnim.name;
+		animation.play("hit");
+		animation.finishCallback = animEnd;
+	}
+	
 	public function onRegenHPTick(t:FlxTimer):Void
 	{
 		FlxG.log.add('Healing! =)');
@@ -250,17 +269,17 @@ class Pet extends Character
 	{
 		if (foodCount == 0)
 		{
-			return FlxColor.fromRGB(255,0,77);
+			return 0xffda2d2d;
 		}
 		else if (foodWarning())
 		{
-			return FlxColor.fromRGB(255,236,39);
+			return 0xffeb8242;
 		}
 		else if (foodHappy())
 		{
-			return FlxColor.fromRGB(0,228,54);
+			return 0xfff6da63;
 		}
-		else return FlxColor.fromRGB(255, 241, 232);
+		else return 0xfff6da63; // FlxColor.fromRGB(255, 241, 232);
 	}
 	
 }

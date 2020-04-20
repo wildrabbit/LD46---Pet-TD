@@ -22,7 +22,7 @@ class Pickable extends FlxSprite
 		this.root = root;
 		if (type == "food")
 		{
-			super(X, Y, "assets/images/proto-food.png");				
+			super(X, Y, "assets/images/food.png");							
 		}
 		else super(X, Y);
 		

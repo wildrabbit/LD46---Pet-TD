@@ -1,5 +1,6 @@
 package org.wildrabbit.pettd.entities;
 
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxAssets.FlxTexturePackerSource;
@@ -17,6 +18,7 @@ import org.wildrabbit.pettd.PlayState;
 	 var name:String;
 	 var frames:Array<Int>;
 	 var fps:Int;
+	 var ?loop:Bool;
  }
 
  typedef CharacterData =
@@ -49,13 +51,18 @@ class Character extends FlxSprite
 		super(X, Y);
 		this.root = root;
 		
+				
+		setFacingFlip(FlxObject.LEFT, true, false);
+		setFacingFlip(FlxObject.RIGHT, false, false);
+		
+		
 		maxHP = hp = data.maxHP;
 				
 		var tex = FlxAtlasFrames.fromTexturePackerJson(data.sheetFile, data.atlasFile);
 		frames = tex;
 		for (anim in data.anims)
 		{
-			animation.addByIndices(anim.name, data.prefix, anim.frames, data.postfix, anim.fps);
+			animation.addByIndices(anim.name, data.prefix, anim.frames, data.postfix, anim.fps, anim.loop == null || anim.loop == true);
 			
 		}
 		animation.play(data.defaultAnim);

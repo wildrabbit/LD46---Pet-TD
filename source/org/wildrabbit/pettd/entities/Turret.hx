@@ -123,7 +123,7 @@ class Turret extends FlxNestedSprite
 		
 		var lineStyle:LineStyle = {
 			thickness:1,
-			color:FlxColor.fromRGB(255, 255, 255, 128)
+			color:0x80f6da63
 		};
 
 		FlxSpriteUtil.drawCircle(detection, detectionRadius, detectionRadius, detectionRadius, FlxColor.TRANSPARENT, lineStyle);

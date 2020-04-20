@@ -438,7 +438,7 @@ class PlayState extends FlxState
 			if (FlxG.mouse.justMoved)
 			{
 				turretPreview.setPosition(posBis.x, posBis.y);
-				turretPreview.color = valid ? turretPreview.color = FlxColor.fromRGB(0,228,54) : FlxColor.fromRGB(255,0,77);
+				turretPreview.color = valid ? turretPreview.color = 0xfff6da63 : 0xff9d0b0b;
 			}
 			else if (FlxG.mouse.justPressed && valid && hasFood)
 			{
@@ -552,7 +552,7 @@ class PlayState extends FlxState
 		
 		mob.petHit();
 		
-		pet.takeDamage(mob.damage);
+		pet.hitByMob(mob.damage);
 		
 		
 	}

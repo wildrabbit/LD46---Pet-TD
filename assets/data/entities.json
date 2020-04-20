@@ -5,9 +5,9 @@
 		"characterData":{
 			"id":0,
 			"name":"blobby",
-			"sheetFile":"assets/images/proto-pet.png",
-			"atlasFile":"assets/images/proto-pet.json",
-			"prefix":"proto-pet",
+			"sheetFile":"assets/images/pet.png",
+			"atlasFile":"assets/images/pet.json",
+			"prefix":"pet",
 			"postfix":".aseprite",
 			"anims":[
 				{
@@ -24,6 +24,13 @@
 					"name":"damaged", 
 					"frames":[4,5], 
 					"fps":3
+				},
+				
+				{
+					"name":"hit", 
+					"frames":[4,5], 
+					"fps":3,
+					"loop":false
 				},
 				{
 					"name":"happy", 
@@ -52,9 +59,9 @@
 			"characterData": {
 				"id":0,
 				"name":"antsy",
-				"sheetFile":"assets/images/proto-mob.png",
-				"atlasFile":"assets/images/proto-mob.json",
-				"prefix":"proto-mob",
+				"sheetFile":"assets/images/mob1.png",
+				"atlasFile":"assets/images/mob1.json",
+				"prefix":"mob1",
 				"postfix":".aseprite",
 				"anims":[
 					{
@@ -77,9 +84,9 @@
 			"characterData": {
 				"id":1,
 				"name":"slimey",
-				"sheetFile":"assets/images/proto-mob2.png",
-				"atlasFile":"assets/images/proto-mob2.json",
-				"prefix":"proto-mob2",
+				"sheetFile":"assets/images/mob2.png",
+				"atlasFile":"assets/images/mob2.json",
+				"prefix":"mob2",
 				"postfix":".aseprite",
 				"anims":[
 					{
@@ -102,9 +109,9 @@
 			"characterData": {
 				"id":2,
 				"name":"speedster",
-				"sheetFile":"assets/images/proto-mob3.png",
-				"atlasFile":"assets/images/proto-mob3.json",
-				"prefix":"proto-mob3",
+				"sheetFile":"assets/images/mob3.png",
+				"atlasFile":"assets/images/mob3.json",
+				"prefix":"mob3",
 				"postfix":".aseprite",
 				"anims":[
 					{
@@ -128,9 +135,9 @@
 	"turrets": [
 		{
 			"id":0,
-			"baseGraphic":"assets/images/proto-turret-base.png",
-			"cannonGraphic":"assets/images/proto-turret-cannon.png",
-			"uiGraphic":"assets/images/proto-turret-ui.png",
+			"baseGraphic":"assets/images/turret1-base.png",
+			"cannonGraphic":"assets/images/turret1-cannon.png",
+			"uiGraphic":"assets/images/turret1-ui.png",
 			"fireRate":0.4,
 			"detectionRadius":128,
 			"width":2,
@@ -147,9 +154,9 @@
 		},
 		{
 			"id":1,
-			"baseGraphic":"assets/images/proto-turret-base2.png",
+			"baseGraphic":"assets/images/turret2-base.png",
 			"cannonGraphic":"",
-			"uiGraphic":"assets/images/proto-turret-base2.png",
+			"uiGraphic":"assets/images/turret2-base.png",
 			"fireRate":0.8,
 			"detectionRadius":128,
 			"width":2,
