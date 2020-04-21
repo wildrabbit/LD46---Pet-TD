@@ -6,41 +6,41 @@
 		"waves":[
 			{
 				"spawnDelay":0.3,
-				"timeMarker":2,
-				"mobs":[0,0,2,2,0,0],
-				"mobSpawn":"mob_waves_0"
-			},
-			
-			{
-				"spawnDelay":0.2,
-				"timeMarker":8,
-				"mobs":[0,0,0,0],
-				"mobSpawn":"mob_waves_0"
-			},
-			{
-				"spawnDelay":0.2,
-				"timeMarker":12,
-				"mobs":[0,1,1,0],
-				"mobSpawn":"mob_waves_0"
-			}		
-		],
-		"allowedTurrets":[0,1],
-		"startFood":100,
-		"feedDisabled":true
-	},
-	{
-		"id":0,
-		"name": "Le test level",
-		"levelTMXPath": "assets/data/test-level.tmx",
-		"waves":[
-			{
-				"spawnDelay":0.2,
-				"timeMarker":2,
+				"timeMarker":3,
 				"mobs":[0,0,0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
+				"spawnDelay":0.3,
+				"timeMarker":8,
+				"mobs":[0,0,0,0,0,0,0,0,0,0],
+				"mobSpawn":"mob_waves_0"
+			},
+			{
+				"spawnDelay":0.3,
+				"timeMarker":12,
+				"mobs":[0,1,1,0,0,0],
+				"mobSpawn":"mob_waves_0"
+			}		
+		],
+		"allowedTurrets":[0],
+		"startFood":100,
+		"feedDisabled":true
+	},
+	{
+		"id":1,
+		"name": "Enter multiple paths",
+		"levelTMXPath": "assets/data/level-1.tmx",
+		"waves":[
+			{
+				"spawnDelay":0.2,
+				"timeMarker":3,
+				"mobs":[0,0,0,0,0,0,0,0,0],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
 				"spawnDelay":0.2,
 				"timeMarker":8,
 				"mobs":[0,0,0,0],
@@ -48,19 +48,19 @@
 			},
 			{
 				"spawnDelay":0.2,
-				"timeMarker":8.5,
+				"timeMarker":8,
 				"mobs":[0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			{
 				"spawnDelay":0.3,
-				"timeMarker":16,
+				"timeMarker":13,
 				"mobs":[1, 1],
 				"mobSpawn":"mob_waves_1"
 			},
 			{
 				"spawnDelay":0.3,
-				"timeMarker":20,
+				"timeMarker":13,
 				"mobs":[0,0,0, 0,0,1],
 				"mobSpawn":"mob_waves_0"
 			},
@@ -68,15 +68,15 @@
 			{
 				"spawnDelay":0.3,
 				"timeMarker":22,
-				"mobs":[0,0,1, 1, 1, 0, 1, 0],
+				"mobs":[1, 1, 1, 1],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
 				"spawnDelay":0.2,
-				"timeMarker":28,
-				"mobs":[0,0,0, 0],
-				"mobSpawn":"mob_waves_0"
+				"timeMarker":23,
+				"mobs":[0,0,0, 0,0,0,0,0,0],
+				"mobSpawn":"mob_waves_1"
 			},
 			
 			{
@@ -84,66 +84,60 @@
 				"timeMarker":32,
 				"mobs":[0,0,0, 0, 0, 0,0,0,1,1],
 				"mobSpawn":"mob_waves_1"
-			},
-			{
-				"spawnDelay":0.2,
-				"timeMarker":36,
-				"mobs":[2,2,2, 2, 2, 2,2,2,2,2],
-				"mobSpawn":"mob_waves_0"
 			}
 		],
 		"allowedTurrets":[0],
-		"startFood":30
+		"startFood":35
 	},
 	{
-		"id":1,
+		"id":2,
 		"name": "L'autre test level",
-		"levelTMXPath": "assets/data/test-level1.tmx",
+		"levelTMXPath": "assets/data/level-2.tmx",
 		"waves":[
 			{
 				"spawnDelay":0.2,
-				"timeMarker":2,
-				"mobs":[0,0,2,2,2,0],
+				"timeMarker":3,
+				"mobs":[0,0,0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
 				"spawnDelay":0.2,
 				"timeMarker":6,
-				"mobs":[0,0,0,0],
+				"mobs":[1,1,1,1],
 				"mobSpawn":"mob_waves_1"
 			},
 			{
 				"spawnDelay":0.2,
 				"timeMarker":8,
-				"mobs":[0,0,0,0],
+				"mobs":[0,0,0,0,0,0,0,0],
 				"mobSpawn":"mob_waves_0"
 			},
 			{
 				"spawnDelay":0.3,
 				"timeMarker":12,
-				"mobs":[1, 1],
+				"mobs":[1, 1,0,0,0],
 				"mobSpawn":"mob_waves_1"
 			},
 			{
 				"spawnDelay":0.3,
 				"timeMarker":16,
-				"mobs":[0,0,0, 0,0,1],
-				"mobSpawn":"mob_waves_2"
+				"mobs":[0,1,1,1,0,0,0,0,0,0,0,0],
+				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
 				"spawnDelay":0.3,
 				"timeMarker":20,
-				"mobs":[0,0,1, 1, 1, 0, 1, 0],
-				"mobSpawn":"mob_waves_2"
+				"mobs":[0,0,0,0,0],
+				"mobSpawn":"mob_waves_1"
 			},
 			
 			{
-				"spawnDelay":0.2,
+				"spawnDelay":0.4,
 				"timeMarker":23,
-				"mobs":[0,0,0, 0],
-				"mobSpawn":"mob_waves_1"
+				"mobs":[1,1,1,1],
+				"mobSpawn":"mob_waves_0"
 			},
 			
 			{
@@ -151,15 +145,70 @@
 				"timeMarker":26,
 				"mobs":[0,0,0, 0, 0, 0,0,0,1,1],
 				"mobSpawn":"mob_waves_0"
-			},
-			{
-				"spawnDelay":0.2,
-				"timeMarker":29,
-				"mobs":[2,2,2, 2, 2, 2,2,2,2,2],
-				"mobSpawn":"mob_waves_0"
 			}
 		],
 		"allowedTurrets":[0,1],
-		"startFood":40
+		"startFood":45
+	},
+	{
+		"id":3,
+		"name": "L'autre test level",
+		"levelTMXPath": "assets/data/level-3.tmx",
+		"waves":[
+			{
+				"spawnDelay":0.2,
+				"timeMarker":3,
+				"mobs":[1,1,1],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.2,
+				"timeMarker":6,
+				"mobs":[2,2,2,2,2,2,2],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.2,
+				"timeMarker":8,
+				"mobs":[0,0,0,0],
+				"mobSpawn":"mob_waves_2"
+			},
+			{
+				"spawnDelay":0.3,
+				"timeMarker":13,
+				"mobs":[1, 1,0,0,0,0,0,0,0,0,0],
+				"mobSpawn":"mob_waves_1"
+			},
+			{
+				"spawnDelay":0.3,
+				"timeMarker":16,
+				"mobs":[2,2,2],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.3,
+				"timeMarker":20,
+				"mobs":[0,0,0,0,0,0,0,0,1,1,1,2],
+				"mobSpawn":"mob_waves_2"
+			},
+			
+			{
+				"spawnDelay":0.4,
+				"timeMarker":23,
+				"mobs":[1,1],
+				"mobSpawn":"mob_waves_0"
+			},
+			
+			{
+				"spawnDelay":0.3,
+				"timeMarker":26,
+				"mobs":[0,0,0, 0, 0, 0,0,0,1,1],
+				"mobSpawn":"mob_waves_1"
+			}
+		],
+		"allowedTurrets":[0,1],
+		"startFood":45
 	}
 ]

@@ -1,4 +1,5 @@
 package org.wildrabbit.pettd.ui;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
@@ -71,6 +72,8 @@ class TurretButton extends FlxSpriteGroup
 	
 	function buttonClicked():Void
 	{
+		FlxG.sound.play(AssetPaths.tap_menu__wav);
+			
 		parent.turretButtonClicked(data);
 	}
 	

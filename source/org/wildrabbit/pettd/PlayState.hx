@@ -10,6 +10,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
 import flixel.system.debug.log.LogStyle;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -393,11 +394,13 @@ class PlayState extends FlxState
 		var firstReleased:Int = FlxG.keys.firstJustReleased();
 		if (firstReleased == FlxKey.ESCAPE)
 		{
+			FlxG.sound.play(AssetPaths.tap_menu__wav);
 			FlxG.switchState(new PlayState(0));
 			return;
 		}
 		if (firstReleased == FlxKey.R)
 		{
+			FlxG.sound.play(AssetPaths.tap_menu__wav);
 			FlxG.switchState(new PlayState(currentLevelIdx));
 			return;
 		}
@@ -420,6 +423,7 @@ class PlayState extends FlxState
 		{
 			if (restartReady && (FlxG.keys.firstJustPressed() >= 0 || FlxG.mouse.justPressed))
 			{
+				FlxG.sound.play(AssetPaths.tap_menu__wav);
 				if (result == Won)
 				{
 					if (currentLevelIdx == levelDataTable.numLevels - 1)
@@ -528,10 +532,28 @@ class PlayState extends FlxState
 		var resultStyle:LogStyle = new LogStyle("[RESULT]","eebbff",12);
 		if (levelResult == Result.Lost)
 		{
+			var box:FlxSprite = new FlxSprite(FlxG.width/2 - 120, FlxG.height/2 - 32);
+			box.makeGraphic(240, 64, 0xff9d0b0b);
+			add(box);
+			var msg:FlxText = new FlxText(FlxG.width / 2 - 100, FlxG.height / 2 - 12, 200, "You lost your pet!", 24);
+			msg.alignment = FlxTextAlign.CENTER;
+			msg.color = 0xfff6da63;
+			add(msg);
+				
+			FlxG.sound.play(AssetPaths.lose__wav);
 			FlxG.log.advanced("Game lost!", resultStyle);
 		}
 		else if (levelResult == Result.Won)
 		{
+			var box:FlxSprite = new FlxSprite(FlxG.width/2 - 120, FlxG.height/2 - 32);
+			box.makeGraphic(240, 64, 0xff9d0b0b);
+			add(box);
+			
+			var msg:FlxText = new FlxText(FlxG.width / 2 - 100, FlxG.height / 2 - 12, 200, "Good job!", 24);
+			msg.alignment = FlxTextAlign.CENTER;
+			msg.color = 0xfff6da63;
+			add(msg);
+			FlxG.sound.play(AssetPaths.win__wav);
 			FlxG.log.advanced("Game won!", resultStyle);
 		}
 		

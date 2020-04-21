@@ -282,4 +282,10 @@ class Pet extends Character
 		else return 0xfff6da63; // FlxColor.fromRGB(255, 241, 232);
 	}
 	
+	override public function takeDamage(dmg:Int):Void 
+	{
+		super.takeDamage(dmg);
+		FlxG.sound.play(AssetPaths.dmg__wav);
+	}
+	
 }

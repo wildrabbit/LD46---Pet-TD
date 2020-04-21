@@ -1,4 +1,5 @@
 package org.wildrabbit.pettd.ui;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -61,6 +62,7 @@ class InteractionButton extends FlxSpriteGroup
 	
 	function buttonClicked():Void
 	{
+		FlxG.sound.play(AssetPaths.tap_menu__wav);
 		parent.interactionButtonClicked(this);
 	}
 	

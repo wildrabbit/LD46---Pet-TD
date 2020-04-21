@@ -19,20 +19,30 @@ class GameWonState extends FlxState
 		
 		//var sp:FlxSprite = new FlxSprite(0, 0, "assets/images/gover.png");
 		//add(sp);
-		var text:FlxText = new FlxText(FlxG.width / 2 - 300, FlxG.height / 2 - 40, 600, "Congrats!", 40);
+		var text:FlxText = new FlxText(FlxG.width / 2 - 300, FlxG.height / 2 - 90, 600, "You beat the game!", 40);
 		
 		text.alignment = FlxTextAlign.CENTER;
 		text.color = 0xffeb8242;
 		add(text);
+		
+		var text2:FlxText = new FlxText(FlxG.width / 2 - 300, FlxG.height / 2 - 40, 600, "Thanks for playing :D", 24);	
+		text2.alignment = FlxTextAlign.CENTER;
+		text2.color = 0xfff6da63;
+		add(text2);
+		
+		var press:FlxText = new FlxText(20, FlxG.height - 20, 256, "Press any key to continue", 10);
+		press.color = 0xfff6da63;
+		add(press);
 	}
 	
 	override public function update(dt:Float):Void
 	{
 		super.update(dt);
 		
-		if (FlxG.keys.justReleased.ANY)
+		if (FlxG.keys.justReleased.ANY || FlxG.mouse.justPressed)
 		{
-			FlxG.switchState(new PlayState());
+			FlxG.sound.play(AssetPaths.tap_menu__wav);
+			FlxG.switchState(new MenuState());
 		}
 	}
 }

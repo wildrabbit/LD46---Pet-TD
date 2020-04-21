@@ -157,8 +157,8 @@
 			"baseGraphic":"assets/images/turret2-base.png",
 			"cannonGraphic":"",
 			"uiGraphic":"assets/images/turret2-base.png",
-			"fireRate":0.8,
-			"detectionRadius":128,
+			"fireRate":2,
+			"detectionRadius":100,
 			"width":2,
 			"height":2,
 			"foodCost":25,
@@ -166,8 +166,8 @@
 				{
 					"selfGraphic":"",
 					"mobGraphic":"assets/images/freeze-vfx.png",
-					"speedDelta":-60,
-					"duration":3
+					"speedDelta":-45,
+					"duration":2.5
 				}
 		}
 	]

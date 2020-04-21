@@ -53,8 +53,9 @@ class MenuState extends FlxState
 	{
 		super.update(dt);
 		
-		if (FlxG.keys.justReleased.ANY)
+		if (FlxG.keys.justReleased.ANY || FlxG.mouse.justPressed)
 		{
+			FlxG.sound.play(AssetPaths.tap_menu__wav);
 			FlxG.switchState(new HowToState());
 		}
 	}

@@ -11,6 +11,8 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
@@ -207,7 +209,8 @@ class Turret extends FlxNestedSprite
 			
 			if (targetsInRange.length > 0)
 			{
-				// TODO: Prepare attack vfx
+				FlxTween.linearMotion(this, x, y, x, y - 5, 0.1, true, {onComplete:finishBump, ease:FlxEase.backIn, type:FlxTweenType.PINGPONG});
+				FlxG.sound.play(AssetPaths.freeze__wav);
 				for (mob in targetsInRange)
 				{
 					mob.applySlow(freezeData.speedDelta, freezeData.duration, freezeData.mobGraphic);
@@ -217,6 +220,12 @@ class Turret extends FlxNestedSprite
 			}
 				
 		}
+	}
+	
+	function finishBump(t:FlxTween):Void
+	{
+		if (t.executions == 2)
+		t.cancel();
 	}
 	
 	function onFreezeReady(timer:FlxTimer):Void
@@ -237,6 +246,7 @@ class Turret extends FlxNestedSprite
 	
 	function fire():Void
 	{
+		FlxG.sound.play(AssetPaths.pew__wav);
 		var point:FlxPoint = getMidpoint();
 		point.y -= height / 2;
 		point.rotate(getMidpoint(), cannonSprite.relativeAngle);
