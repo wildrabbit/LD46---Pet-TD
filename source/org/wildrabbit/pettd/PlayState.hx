@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.editors.ogmo.FlxOgmo3Loader.LevelData;
 import flixel.group.FlxGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
@@ -23,6 +24,7 @@ import org.wildrabbit.pettd.entities.Mob;
 import org.wildrabbit.pettd.entities.Pet;
 import org.wildrabbit.pettd.entities.Pickable;
 import org.wildrabbit.pettd.entities.Turret;
+import org.wildrabbit.pettd.ui.GameWonState;
 import org.wildrabbit.pettd.ui.HUDBar;
 import org.wildrabbit.pettd.ui.InteractionButton;
 import org.wildrabbit.pettd.ui.TurretButton;
@@ -388,13 +390,19 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
-		if (FlxG.keys.firstJustReleased() == FlxKey.ESCAPE)
+		var firstReleased:Int = FlxG.keys.firstJustReleased();
+		if (firstReleased == FlxKey.ESCAPE)
 		{
 			FlxG.switchState(new PlayState(0));
 			return;
 		}
+		if (firstReleased == FlxKey.R)
+		{
+			FlxG.switchState(new PlayState(currentLevelIdx));
+			return;
+		}
 		
-		if (FlxG.keys.firstJustReleased() == FlxKey.F1)
+		if (firstReleased == FlxKey.F1)
 		{
 			if (showTurretArea)
 			{
@@ -414,8 +422,14 @@ class PlayState extends FlxState
 			{
 				if (result == Won)
 				{
-					// TODO: Move to game over if last level
-					FlxG.switchState(new PlayState(currentLevelIdx < levelDataTable.numLevels - 1 ? currentLevelIdx + 1: 0));
+					if (currentLevelIdx == levelDataTable.numLevels - 1)
+					{
+						FlxG.switchState(new GameWonState());
+					}
+					else
+					{
+						FlxG.switchState(new PlayState(currentLevelIdx + 1));	
+					}					
 				}
 				else
 				{

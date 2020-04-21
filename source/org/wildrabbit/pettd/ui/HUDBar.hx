@@ -72,12 +72,12 @@ class HUDBar extends FlxGroup
 		add(food);
 		startY += food.height + 4;
 
-		turretsLabel = new FlxText(startX, startY, 120, "Turrets", 12);
+		turretsLabel = new FlxText(startX, startY + 12, 120, "TURRETS", 12);
 		turretsLabel.alignment = FlxTextAlign.CENTER;
 		turretsLabel.color = 0xffda2d2d;
 		add(turretsLabel);
 		
-		interactionsLabel = new FlxText(startX, startY + 96, 120, "Interactions", 12);
+		interactionsLabel = new FlxText(startX, startY + 112, 120, "FEED", 12);
 		interactionsLabel.color = 0xffda2d2d;
 		interactionsLabel.alignment = FlxTextAlign.CENTER;
 		add(interactionsLabel);
